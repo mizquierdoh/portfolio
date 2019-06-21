@@ -5,13 +5,16 @@ import cheerio from 'cheerio';
 const urlResurrection = 'http://www.resurrectionfest.es/';
 const corsUrl = 'https://cors-anywhere.herokuapp.com/'
 
+const unique = (value, index, self) => {
+    return self.indexOf(value) === index
+}
+
 
 class Resurrection extends Component {
 
-    state = { bandas: [] }
+    state = { bandas: [], horarios: [] }
 
-    searchBands = () => {
-
+    actualizarBands = () => {
         fetch(`${corsUrl}${urlResurrection}/horarios/`)
             .then((response) => {
                 return response.text()
@@ -25,45 +28,45 @@ class Resurrection extends Component {
                 var juevesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(15)");
                 var viernesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(16)");
                 var sabadoHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(17)");
+                var bandas = [];
+                bandas = this.tratarHTML(bandas, miercolesHTML);
+                bandas = this.tratarHTML(bandas, juevesHTML);
+                bandas = this.tratarHTML(bandas, viernesHTML);
+                bandas = this.tratarHTML(bandas, sabadoHTML);
+                return bandas;
+            })
+            .then(bandas => {
 
-                this.tratarHTML(miercolesHTML);
-                this.tratarHTML(juevesHTML);
-                this.tratarHTML(viernesHTML);
-                this.tratarHTML(sabadoHTML);
-                console.log(this.state.bandas.sort(this.compararFechas));
-
-                // var hijos = miercolesHTML.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(14) > p:nth-child(2)")
-                //     .innerHTML.split("<br>");
-
-                // var escenario;
-                // var bandas = [];
-
-                // for (var i = 0; i < hijos.length; i++) {
-                //     if (i === 0) {
-                //         escenario = hijos[i].replace("<em>", "").replace("</em>", "");
-                //     }
-                //     else {
-
-                //         var banda = {
-                //             id: i,
-                //             horaInicio: new Date(2019, 6, 3, hijos[i].substring(1, 6).split(':')[0], hijos[i].substring(1, 6).split(':')[1], 0),
-                //             horaFin: new Date(2019, 6, 3, hijos[i].substring(9, 14).split(':')[0], hijos[i].substring(9, 14).split(':')[1], 0),
-                //             escenario: escenario,
-                //             nombre: hijos[i].substr(15)
-                //         };
-                //         // console.log(banda);
-                //         bandas.push(banda);
-                //     }
-                // }
-                // console.log('bandas', bandas);
-
-                // console.log('miercoles', miercolesHTML);
-                // console.log('children', hijos);
-
-                // this.setState({ bandas: bandas.sort(this.compararFechas) });
+                var horarios = bandas.map(banda => banda.horaInicio)
+                    .concat(bandas.map(banda => banda.horaFin))
+                    .filter(unique).sort((a, b) => a - b);
+                console.log(horarios);
+                localStorage.setItem('bandas', JSON.stringify(bandas));
+                localStorage.setItem('horarios', JSON.stringify(horarios));
+                this.setState({ bandas: bandas.sort(this.compararFechas), horarios });
             })
 
             .catch((error) => console.log(error, error.message));
+    }
+
+    searchBands = () => {
+        if (localStorage.getItem('bandas') && localStorage.getItem('horarios')) {
+            var horarios = JSON.parse(localStorage.getItem('horarios')).map(hora => new Date(hora));
+            this.setState({
+                bandas: JSON.parse(localStorage.getItem('bandas')).map(banda => {
+                    banda.horaInicio = new Date(banda.horaInicio);
+                    banda.horaFin = new Date(banda.horaFin);
+                    return banda;
+                }).sort(this.compararFechas),
+                horarios
+
+            })
+            console.log(this.state.horarios);
+            return;
+        }
+        this.actualizarBands();
+
+
 
     }
 
@@ -71,32 +74,22 @@ class Resurrection extends Component {
         var fA = a.horaInicio;
         var fB = b.horaInicio;
         return fA - fB;
-        // if (fA.getDate() !== fB.getDate()) {
-        //     return fA.getDate() - fB.getDate();
-        // }
-        // else if (fA.getHours() !== fB.getHours()) {
-        //     return fA.getHours() - fB.getHours()
-        // }
-        // else if (fA.getMinutes() !== fB.getMinutes()) {
-        //     return fA.getMinutes() - fB.getMinutes()
-        // }
-        // else {
-        //     return 0;
-        // }
-
-
     }
 
-    tratarHTML = (html) => {
-        var bandas = this.state.bandas.sort(this.compararFechas);
+    tratarHTML = (bands, html) => {
+        var bandas = bands;
         var nodosDia = Array.from(html.childNodes).filter(node => node.nodeName !== "#text");
-        var dia = nodosDia[0].childNodes[0].innerText.substring(1, 2);
-
+        var dia;
+        if ('14' === nodosDia[0].childNodes[0].innerText.substring(0, 2)) {
+            dia = 5
+        }
+        else {
+            dia = nodosDia[0].childNodes[0].innerText.substring(1, 2);
+        }
         nodosDia = nodosDia.slice(1);
         var escenario;
         nodosDia.forEach(nodoDia => {
             var nodosEscenarios = Array.from(nodoDia.childNodes).filter(nodo => nodo.nodeName !== "BR");
-            // console.log(nodosEscenarios);
             var i = 0;
             nodosEscenarios.forEach(nodoEscenarios => {
 
@@ -107,7 +100,6 @@ class Resurrection extends Component {
                     else {
                         escenario = nodoEscenarios.textContent;
                     }
-                    // console.log(nodoEscenarios, escenario);
 
                 }
                 else {
@@ -117,12 +109,12 @@ class Resurrection extends Component {
                     var minInicio = nodoEscenarios.textContent.substring(1, 6).split(':')[1];
                     var horaFin = nodoEscenarios.textContent.substring(9, 14).split(':')[0];
                     var minFin = nodoEscenarios.textContent.substring(9, 14).split(':')[1];
-                    var nombre = nodoEscenarios.textContent.substr(15)
+                    var nombre = nodoEscenarios.textContent.substr(15);
                     var diaInicio = dia;
                     if (horaInicio < 5) {
                         diaInicio++;
                     }
-                    var diaFin;
+                    var diaFin = dia;
                     if (horaFin < 5) {
                         diaFin++;
                     }
@@ -133,9 +125,7 @@ class Resurrection extends Component {
                         escenario: escenario,
                         nombre
                     };
-                    console.log(nodoEscenarios, dia, escenario, horaInicio, minInicio, horaFin, minFin, nombre, banda);
                     bandas.push(banda);
-                    console.log(bandas);
 
                 }
                 i++;
@@ -143,8 +133,7 @@ class Resurrection extends Component {
 
         })
 
-        this.setState({ bandas: bandas.sort(this.compararFechas) })
-
+        return bandas;
 
 
 
@@ -174,19 +163,21 @@ class Resurrection extends Component {
                     <table className="table" >
                         <thead>
                             <tr>
-                                <th scope="col">Banda</th>
+                                {/* <th scope="col">Banda</th>
                                 <th scope="col">Día</th>
                                 <th scope="col">Escenario</th>
                                 <th scope="col">Inicio</th>
-                                <th scope="col">Final</th>
+                                <th scope="col">Final</th> */}
+                                <th scope="col">Hora</th>
                             </tr>
                         </thead>
 
                         < tbody >
                             {
 
-                                this.state.bandas.map(banda => (
+                                this.state.bandas.map((banda, index, self) => (
                                     <tr key={banda.id} >
+
                                         < td > {banda.nombre} </td>
                                         <td> {this.getDia(banda.horaInicio)}</td>
                                         <td> {banda.escenario}</td>
@@ -195,6 +186,11 @@ class Resurrection extends Component {
 
                                     </tr>
                                 ))
+                                // this.state.horarios.map((hora, index) => (
+                                //     <tr key={index} ><th scope="row">{hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</th></tr>
+                                // ))
+
+
                             }
                         </tbody>
                     </table>
