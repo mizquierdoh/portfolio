@@ -1,14 +1,16 @@
 import React from 'react';
+import Main from "./Main";
+import Header from "./Header";
+import Container from "react-bootstrap/Container"
 
-import Resurrection from './Resurrection';
 
-import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <Resurrection />
-    </div>
+    <Container>
+      <Header />
+      <Main />
+    </Container>
   );
 }
 

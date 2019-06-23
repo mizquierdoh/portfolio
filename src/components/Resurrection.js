@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
 import cheerio from 'cheerio';
+import { Link } from 'react-router-dom';
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Table from 'react-bootstrap/Table'
+import Alert from 'react-bootstrap/Alert'
+import Container from 'react-bootstrap/Container'
+
+import Bandas from '../data/Bandas';
 
 
 const urlResurrection = 'http://www.resurrectionfest.es/';
@@ -12,7 +20,42 @@ const unique = (value, index, self) => {
 
 class Resurrection extends Component {
 
-    state = { bandas: [], horarios: [] }
+    state = { bandas: [], horarios: [], escenarios: [] }
+
+    constructor() {
+        super();
+        var bandas = [];
+        var horarios = [];
+        var escenarios = [];
+        if (localStorage.getItem('bandas')) {
+
+            bandas = JSON.parse(localStorage.getItem('bandas')).map(banda => {
+                banda.horaInicio = new Date(banda.horaInicio);
+                banda.horaFin = new Date(banda.horaFin);
+                return banda;
+            });
+
+        }
+
+        if (localStorage.getItem('horarios')) {
+            horarios = JSON.parse(localStorage.getItem('horarios')).map(hora => new Date(hora));
+        }
+
+        if (localStorage.getItem('escenarios')) {
+            escenarios = JSON.parse(localStorage.getItem('escenarios'))
+                .map(escenario => {
+                    return escenario.map(banda => {
+                        banda.banda.horaInicio = new Date(banda.banda.horaInicio);
+                        banda.banda.horaFin = new Date(banda.banda.horaFin);
+                        return banda;
+                    });
+                });
+        }
+
+        this.state = {
+            bandas, horarios, escenarios
+        }
+    }
 
     actualizarBands = () => {
         fetch(`${corsUrl}${urlResurrection}/horarios/`)
@@ -33,41 +76,65 @@ class Resurrection extends Component {
                 bandas = this.tratarHTML(bandas, juevesHTML);
                 bandas = this.tratarHTML(bandas, viernesHTML);
                 bandas = this.tratarHTML(bandas, sabadoHTML);
-                return bandas;
+                return bandas.sort(this.compararFechas);
             })
             .then(bandas => {
 
                 var horarios = bandas.map(banda => banda.horaInicio)
                     .concat(bandas.map(banda => banda.horaFin))
                     .filter(unique).sort((a, b) => a - b);
-                console.log(horarios);
                 localStorage.setItem('bandas', JSON.stringify(bandas));
                 localStorage.setItem('horarios', JSON.stringify(horarios));
-                this.setState({ bandas: bandas.sort(this.compararFechas), horarios });
+                this.setState({ bandas: bandas, horarios });
+
+                var mainStage = this.getEscenario(bandas, "Main Stage", horarios);
+                var ritualStage = this.getEscenario(bandas, "Ritual Stage", horarios);
+                var chaosStage = this.getEscenario(bandas, "Chaos Stage", horarios);
+                var desertStage = this.getEscenario(bandas, "Desert Stage", horarios);
+
+                this.setState({ escenarios: [mainStage, ritualStage, chaosStage, desertStage] });
+                localStorage.setItem('escenarios', JSON.stringify([mainStage, ritualStage, chaosStage, desertStage]));
+
+
             })
 
             .catch((error) => console.log(error, error.message));
     }
 
-    searchBands = () => {
-        if (localStorage.getItem('bandas') && localStorage.getItem('horarios')) {
-            var horarios = JSON.parse(localStorage.getItem('horarios')).map(hora => new Date(hora));
-            this.setState({
-                bandas: JSON.parse(localStorage.getItem('bandas')).map(banda => {
-                    banda.horaInicio = new Date(banda.horaInicio);
-                    banda.horaFin = new Date(banda.horaFin);
-                    return banda;
-                }).sort(this.compararFechas),
-                horarios
 
+    getEscenario(bandas, escenario, horarios) {
+        var bandasEscenario = [];
+        bandas.filter(b => b.escenario === escenario).forEach(banda => {
+
+
+            var rawspan = horarios.indexOf(banda.horaFin) - horarios.indexOf(banda.horaInicio) + 1;
+            var horario = horarios.indexOf(banda.horaInicio);
+
+            var vacio = {};
+            if (horario !== 0) {
+                if (bandasEscenario.length === 0) {
+                    vacio = { horario: 0, rawspan: horario };
+                }
+                else {
+                    vacio = {
+                        horario: bandasEscenario[bandasEscenario.length - 1].horario + rawspan - 1,
+                        rawspan: horario - bandasEscenario[bandasEscenario.length - 1].horario - bandasEscenario[bandasEscenario.length - 1].rawspan + 1
+                    }
+                }
+                if (vacio.rawspan !== 0) {
+                    bandasEscenario.push({
+                        banda: {}, rawspan: vacio.rawspan, horario: vacio.horario
+                    })
+                }
+            }
+
+
+            bandasEscenario.push({
+                banda, rawspan, horario
             })
-            console.log(this.state.horarios);
-            return;
-        }
-        this.actualizarBands();
-
-
-
+        })
+        console.log(bandasEscenario);
+        return bandasEscenario;
     }
 
     compararFechas(a, b) {
@@ -118,18 +185,29 @@ class Resurrection extends Component {
                     if (horaFin < 5) {
                         diaFin++;
                     }
+                    var personalizado = Bandas.find(band => band.Grupo === nombre.toUpperCase());
+
                     var banda = {
                         id: bandas.length,
                         horaInicio: new Date(2019, 6, diaInicio, horaInicio, minInicio, 0),
                         horaFin: new Date(2019, 6, diaFin, horaFin, minFin, 0),
                         escenario: escenario,
                         nombre
+
+
                     };
+                    if (personalizado) {
+                        banda.preferencia = personalizado.Preferencia;
+                        banda.relevancia = personalizado.Relevancia;
+                        banda.procedencia = personalizado.Procedencia;
+                        banda.descripcion = personalizado.Descripción;
+                    }
                     bandas.push(banda);
 
                 }
                 i++;
             })
+
 
         })
 
@@ -149,57 +227,99 @@ class Resurrection extends Component {
         return dia.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' });
     }
 
-    componentDidMount() {
-        this.searchBands();
 
+
+
+
+    claseNombre(preferencia) {
+        if (preferencia === 'TRUE') {
+            return "success";
+        }
+        else if (preferencia === 'FALSE') {
+            return "danger";
+        }
+        return "default";
     }
 
     render() {
 
         return (
-            <div>
+            <Row><Col>
                 <h1>Resurrection </h1>
-                <div>
-                    <table className="table" >
-                        <thead>
-                            <tr>
-                                {/* <th scope="col">Banda</th>
-                                <th scope="col">Día</th>
-                                <th scope="col">Escenario</th>
-                                <th scope="col">Inicio</th>
-                                <th scope="col">Final</th> */}
-                                <th scope="col">Hora</th>
-                            </tr>
-                        </thead>
-
-                        < tbody >
-                            {
-
-                                this.state.bandas.map((banda, index, self) => (
-                                    <tr key={banda.id} >
-
-                                        < td > {banda.nombre} </td>
-                                        <td> {this.getDia(banda.horaInicio)}</td>
-                                        <td> {banda.escenario}</td>
-                                        <td>{banda.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} </td>
-                                        < td > {banda.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} </td>
-
-                                    </tr>
-                                ))
-                                // this.state.horarios.map((hora, index) => (
-                                //     <tr key={index} ><th scope="row">{hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</th></tr>
-                                // ))
+                <button className="btn btn-primary" onClick={this.actualizarBands}>Actualizar</button>
+                <Container >
 
 
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    <Col>
+                        <Row><h3>Hora</h3></Row>
+                        {
+
+
+                            this.state.horarios.map((hora, index) => {
+                                return (
+                                    <Row key={index}>
+                                        {hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+
+
+                                    </Row>
+
+                                )
+                            })
+
+
+
+
+
+                        }
+
+
+
+
+                    </Col>
+
+
+                    {
+                        this.state.escenarios.map((escenario, ind) => {
+                            return (
+                                <Col key={ind}>
+                                    <Row><h3>{escenario[0].escenario}</h3></Row>
+                                    {
+
+                                        escenario.map((banda, index) => {
+                                            return (
+                                                <Row key={index}>
+                                                    {banda.nombre}
+                                                </Row>
+                                            )
+                                        })
+                                    }
+                                </Col>
+                            )
+
+
+
+                        })
+                    }
+
+                </ Container>
+            </Col></Row>
 
 
         )
     }
 }
+
+class BandaHorario extends Component {
+    render() {
+        if (this.props.banda) {
+            return (<td rawspan={this.props.banda.rawspan}><Alert variant="primary">{this.props.banda.banda.nombre}</Alert></td >)
+        }
+        else {
+            return null;
+        }
+
+    }
+}
+
 
 export default Resurrection;
