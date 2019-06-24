@@ -249,13 +249,15 @@ class Resurrection extends Component {
         return "default";
     }
 
+
+
     render() {
 
         return (
             <Row><Col>
                 <h1>Resurrection </h1>
                 <button className="btn btn-primary" onClick={this.actualizarBands}>Actualizar</button>
-                <Carousel>
+                <Carousel interval={null} warp={false} indicators={true}>
 
                     {
                         this.state.bandas.map((dia, index) => (
@@ -348,7 +350,7 @@ class BandaHorario extends Component {
         var className = "text-light";
 
 
-        if (this.props.concierto.banda.relevancia < 3.5 && this.props.concierto.banda.relevancia >= 2.5) {
+        if (this.props.concierto.banda.relevancia < 3.5 && this.props.concierto.banda.relevancia >= 2.5 && this.props.concierto.banda.preferencia !== "TRUE") {
             className = "text-dark";
         }
 
