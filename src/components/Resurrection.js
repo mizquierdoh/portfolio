@@ -82,15 +82,20 @@ class Resurrection extends Component {
 
                 var horarios = bandas.map(banda => banda.horaInicio)
                     .concat(bandas.map(banda => banda.horaFin))
-                    .filter(unique).sort((a, b) => a - b);
+                    .map(fecha => fecha.toString())
+                    .filter(unique)
+                    .map(fecha => new Date(fecha))
+                    .sort((a, b) => a - b);
+
+                console.log(horarios);
                 localStorage.setItem('bandas', JSON.stringify(bandas));
                 localStorage.setItem('horarios', JSON.stringify(horarios));
                 this.setState({ bandas: bandas, horarios });
 
-                var mainStage = this.getEscenario(bandas, "Main Stage", horarios);
-                var ritualStage = this.getEscenario(bandas, "Ritual Stage", horarios);
-                var chaosStage = this.getEscenario(bandas, "Chaos Stage", horarios);
-                var desertStage = this.getEscenario(bandas, "Desert Stage", horarios);
+                var mainStage = this.getEscenario(bandas, "Main Stage", horarios.map(fecha => fecha.toString()));
+                var ritualStage = this.getEscenario(bandas, "Ritual Stage", horarios.map(fecha => fecha.toString()));
+                var chaosStage = this.getEscenario(bandas, "Chaos Stage", horarios.map(fecha => fecha.toString()));
+                var desertStage = this.getEscenario(bandas, "Desert Stage", horarios.map(fecha => fecha.toString()));
 
                 this.setState({ escenarios: [mainStage, ritualStage, chaosStage, desertStage] });
                 localStorage.setItem('escenarios', JSON.stringify([mainStage, ritualStage, chaosStage, desertStage]));
@@ -107,30 +112,31 @@ class Resurrection extends Component {
         bandas.filter(b => b.escenario === escenario).forEach(banda => {
 
 
-            var rawspan = horarios.indexOf(banda.horaFin) - horarios.indexOf(banda.horaInicio) + 1;
-            var horario = horarios.indexOf(banda.horaInicio);
+            var rowSpan = horarios.indexOf(banda.horaFin.toString()) - horarios.indexOf(banda.horaInicio.toString());
+            var horario = horarios.indexOf(banda.horaInicio.toString());
 
             var vacio = {};
             if (horario !== 0) {
                 if (bandasEscenario.length === 0) {
-                    vacio = { horario: 0, rawspan: horario };
+                    vacio = { horario: 0, rowSpan: horario };
                 }
                 else {
+                    var horarioVacio = bandasEscenario[bandasEscenario.length - 1].horario + bandasEscenario[bandasEscenario.length - 1].rowSpan;
                     vacio = {
-                        horario: bandasEscenario[bandasEscenario.length - 1].horario + rawspan - 1,
-                        rawspan: horario - bandasEscenario[bandasEscenario.length - 1].horario - bandasEscenario[bandasEscenario.length - 1].rawspan + 1
+                        horario: horarioVacio,
+                        rowSpan: horario - horarioVacio
                     }
                 }
-                if (vacio.rawspan !== 0) {
+                if (vacio.rowSpan !== 0) {
                     bandasEscenario.push({
-                        banda: {}, rawspan: vacio.rawspan, horario: vacio.horario
+                        banda: { escenario: banda.escenario }, rowSpan: vacio.rowSpan, horario: vacio.horario
                     })
                 }
             }
 
 
             bandasEscenario.push({
-                banda, rawspan, horario
+                banda, rowSpan, horario
             })
         })
         console.log(bandasEscenario);
@@ -148,7 +154,7 @@ class Resurrection extends Component {
         var nodosDia = Array.from(html.childNodes).filter(node => node.nodeName !== "#text");
         var dia;
         if ('14' === nodosDia[0].childNodes[0].innerText.substring(0, 2)) {
-            dia = 5
+            dia = 6
         }
         else {
             dia = nodosDia[0].childNodes[0].innerText.substring(1, 2);
@@ -247,21 +253,55 @@ class Resurrection extends Component {
             <Row><Col>
                 <h1>Resurrection </h1>
                 <button className="btn btn-primary" onClick={this.actualizarBands}>Actualizar</button>
-                <Container >
 
 
-                    <Col>
-                        <Row><h3>Hora</h3></Row>
+
+
+                <Table >
+
+
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Main Stage</th>
+                            <th>Ritual Stage</th>
+                            <th>Chaos Stage</th>
+                            <th>Desert Stage</th>
+
+
+
+                        </tr>
+
+
+                    </thead>
+
+                    <tbody>
                         {
 
 
                             this.state.horarios.map((hora, index) => {
                                 return (
-                                    <Row key={index}>
-                                        {hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    <tr key={index}>
+                                        <th >
+                                            {hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </th>
+                                        {
+                                            this.state.escenarios.map((escenario, idx) => {
+                                                var concierto = escenario.find(b => b.horario === index);
+                                                if (concierto)
+                                                    return (
+                                                        <BandaHorario key={idx} concierto={concierto} />
+                                                    )
+                                                else
+                                                    return null;
+                                            })
 
 
-                                    </Row>
+
+                                        }
+
+
+                                    </tr>
 
                                 )
                             })
@@ -272,36 +312,12 @@ class Resurrection extends Component {
 
                         }
 
+                    </tbody>
 
 
 
-                    </Col>
 
-
-                    {
-                        this.state.escenarios.map((escenario, ind) => {
-                            return (
-                                <Col key={ind}>
-                                    <Row><h3>{escenario[0].escenario}</h3></Row>
-                                    {
-
-                                        escenario.map((banda, index) => {
-                                            return (
-                                                <Row key={index}>
-                                                    {banda.nombre}
-                                                </Row>
-                                            )
-                                        })
-                                    }
-                                </Col>
-                            )
-
-
-
-                        })
-                    }
-
-                </ Container>
+                </ Table>
             </Col></Row>
 
 
@@ -311,11 +327,16 @@ class Resurrection extends Component {
 
 class BandaHorario extends Component {
     render() {
-        if (this.props.banda) {
-            return (<td rawspan={this.props.banda.rawspan}><Alert variant="primary">{this.props.banda.banda.nombre}</Alert></td >)
+        if (this.props.concierto.banda.nombre) {
+            return (<td rowSpan={this.props.concierto.rowSpan} className="align-middle">
+                <Container >
+                    <Row><p className="text-center">{this.props.concierto.banda.nombre}</p></Row>
+                    <Row><p className="text-center"><em>{`${this.props.concierto.banda.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${this.props.concierto.banda.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</em></p></Row>
+                </Container>
+            </td >)
         }
         else {
-            return null;
+            return (<td rowSpan={this.props.concierto.rowSpan}></td >)
         }
 
     }
