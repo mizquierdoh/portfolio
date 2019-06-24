@@ -328,11 +328,13 @@ class Resurrection extends Component {
 class BandaHorario extends Component {
     render() {
         if (this.props.concierto.banda.nombre) {
-            return (<td rowSpan={this.props.concierto.rowSpan} className="align-middle">
-                <Container >
-                    <Row><p className="text-center">{this.props.concierto.banda.nombre}</p></Row>
-                    <Row><p className="text-center"><em>{`${this.props.concierto.banda.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${this.props.concierto.banda.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</em></p></Row>
-                </Container>
+            return (<td rowSpan={this.props.concierto.rowSpan} className={this.getTdClassName()}>
+                <Link to={{ pathname: `/banda/${this.props.concierto.banda.nombre}`, state: { banda: this.props.concierto.banda } }} className={this.getLinkClassName()} >
+                    <Container >
+                        <Row><strong>{this.props.concierto.banda.nombre}</strong>&nbsp;({this.props.concierto.banda.relevancia})</Row>
+                        <Row><em>{`${this.props.concierto.banda.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${this.props.concierto.banda.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</em></Row>
+                    </Container>
+                </Link>
             </td >)
         }
         else {
@@ -340,7 +342,43 @@ class BandaHorario extends Component {
         }
 
     }
+
+    getLinkClassName = () => {
+        var className = "text-light";
+
+
+        if (this.props.concierto.banda.relevancia < 3.5 && this.props.concierto.banda.relevancia >= 2.5) {
+            className = "text-dark";
+        }
+
+        return className;
+    }
+
+    getTdClassName = () => {
+        var className = "";
+        if (!this.props.concierto.banda.relevancia) {
+            className = "bg-secondary";
+        }
+        else if (this.props.concierto.banda.relevancia < 2.5) {
+            className = "bg-danger";
+        }
+        else if (this.props.concierto.banda.relevancia < 3.5) {
+            className = "bg-warning";
+        }
+        else {
+            className = "bg-success";
+        }
+
+        if (this.props.concierto.banda.preferencia === "TRUE") {
+            className = "bg-primary";
+        }
+
+        return "align-middle " + className;
+    }
 }
+
+
+
 
 
 export default Resurrection;

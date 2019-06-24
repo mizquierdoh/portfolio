@@ -9,10 +9,10 @@ const Header = () => {
         <Row>
             <Col>
                 <Navbar bg="dark" variant="dark" >
-                    <Navbar.Brand> <Link to="/">Horarios</Link></Navbar.Brand>
+                    <Navbar.Brand> <Link to="/" className="text-light">Horarios</Link></Navbar.Brand>
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <NavLink to="/now" >Ahora</NavLink>
+                            <NavLink className="text-light" to="/now" >Ahora</NavLink>
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>

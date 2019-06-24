@@ -10,9 +10,9 @@ import { Container } from 'react-bootstrap'
 const Main = () => (
     <Container>
         <Switch>
-            <Route exact path="/" component={Resurrection} />
-            <Route path="/banda/:banda" component={Banda} />
-            <Route path="/now" component={Now} />
+            <Route name="home" exact path="/" component={Resurrection} />
+            <Route name="banda" path="/banda/:banda" component={Banda} />
+            <Route name="ahora" path="/now" component={Now} />
         </Switch>
     </Container>
 );
