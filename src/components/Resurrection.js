@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Table from 'react-bootstrap/Table'
-import Alert from 'react-bootstrap/Alert'
+import Carousel from 'react-bootstrap/Carousel'
 import Container from 'react-bootstrap/Container'
 
 import Bandas from '../data/Bandas';
@@ -20,40 +20,35 @@ const unique = (value, index, self) => {
 
 class Resurrection extends Component {
 
-    state = { bandas: [], horarios: [], escenarios: [] }
+    state = { bandas: [] }
 
     constructor() {
         super();
         var bandas = [];
-        var horarios = [];
-        var escenarios = [];
+
         if (localStorage.getItem('bandas')) {
 
-            bandas = JSON.parse(localStorage.getItem('bandas')).map(banda => {
-                banda.horaInicio = new Date(banda.horaInicio);
-                banda.horaFin = new Date(banda.horaFin);
-                return banda;
+            bandas = JSON.parse(localStorage.getItem('bandas')).map(dia => {
+
+                dia.fecha = new Date(dia.fecha);
+                dia.horarios = dia.horarios.map(hora => new Date(hora));
+                dia.escenarios = dia.escenarios.map(escenario => {
+                    return escenario.map(concierto => {
+                        concierto.banda.horaInicio = new Date(concierto.banda.horaInicio);
+                        concierto.banda.horaFin = new Date(concierto.banda.horaFin);
+                        return concierto;
+                    });
+                });
+
+                return dia;
             });
 
         }
 
-        if (localStorage.getItem('horarios')) {
-            horarios = JSON.parse(localStorage.getItem('horarios')).map(hora => new Date(hora));
-        }
 
-        if (localStorage.getItem('escenarios')) {
-            escenarios = JSON.parse(localStorage.getItem('escenarios'))
-                .map(escenario => {
-                    return escenario.map(banda => {
-                        banda.banda.horaInicio = new Date(banda.banda.horaInicio);
-                        banda.banda.horaFin = new Date(banda.banda.horaFin);
-                        return banda;
-                    });
-                });
-        }
 
         this.state = {
-            bandas, horarios, escenarios
+            bandas
         }
     }
 
@@ -71,37 +66,44 @@ class Resurrection extends Component {
                 var juevesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(15)");
                 var viernesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(16)");
                 var sabadoHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(17)");
-                var bandas = [];
-                bandas = this.tratarHTML(bandas, miercolesHTML);
-                bandas = this.tratarHTML(bandas, juevesHTML);
-                bandas = this.tratarHTML(bandas, viernesHTML);
-                bandas = this.tratarHTML(bandas, sabadoHTML);
-                return bandas.sort(this.compararFechas);
-            })
-            .then(bandas => {
+                var bandasTemp = [];
+                bandasTemp[0] = this.tratarHTML(miercolesHTML).sort(this.compararFechas);
+                bandasTemp[1] = this.tratarHTML(juevesHTML).sort(this.compararFechas);
+                bandasTemp[2] = this.tratarHTML(viernesHTML).sort(this.compararFechas);
+                bandasTemp[3] = this.tratarHTML(sabadoHTML).sort(this.compararFechas);
 
-                var horarios = bandas.map(banda => banda.horaInicio)
-                    .concat(bandas.map(banda => banda.horaFin))
-                    .map(fecha => fecha.toString())
-                    .filter(unique)
-                    .map(fecha => new Date(fecha))
-                    .sort((a, b) => a - b);
+                var bandas = bandasTemp.map((bandasDia, index) => {
 
-                console.log(horarios);
+                    var fecha = new Date(2019, 6, 3 + index, 12, 0, 0);
+                    var horarios = bandasDia.map(banda => banda.horaInicio)
+                        .concat(bandasDia.map(banda => banda.horaFin))
+                        .map(fecha => fecha.toString())
+                        .filter(unique)
+                        .map(fecha => new Date(fecha))
+                        .sort((a, b) => a - b);
+
+                    var mainStage = this.getEscenario(bandasDia, "Main Stage", horarios.map(fecha => fecha.toString()));
+                    var ritualStage = this.getEscenario(bandasDia, "Ritual Stage", horarios.map(fecha => fecha.toString()));
+                    var chaosStage = this.getEscenario(bandasDia, "Chaos Stage", horarios.map(fecha => fecha.toString()));
+                    var desertStage = this.getEscenario(bandasDia, "Desert Stage", horarios.map(fecha => fecha.toString()));
+                    var escenarios = [mainStage, ritualStage, chaosStage, desertStage];
+
+
+
+                    var dia = {
+                        fecha,
+                        horarios,
+                        escenarios
+                    };
+                    return dia;
+                }
+
+                )
+
+                this.setState({ bandas });
                 localStorage.setItem('bandas', JSON.stringify(bandas));
-                localStorage.setItem('horarios', JSON.stringify(horarios));
-                this.setState({ bandas: bandas, horarios });
-
-                var mainStage = this.getEscenario(bandas, "Main Stage", horarios.map(fecha => fecha.toString()));
-                var ritualStage = this.getEscenario(bandas, "Ritual Stage", horarios.map(fecha => fecha.toString()));
-                var chaosStage = this.getEscenario(bandas, "Chaos Stage", horarios.map(fecha => fecha.toString()));
-                var desertStage = this.getEscenario(bandas, "Desert Stage", horarios.map(fecha => fecha.toString()));
-
-                this.setState({ escenarios: [mainStage, ritualStage, chaosStage, desertStage] });
-                localStorage.setItem('escenarios', JSON.stringify([mainStage, ritualStage, chaosStage, desertStage]));
-
-
             })
+
 
             .catch((error) => console.log(error, error.message));
     }
@@ -149,8 +151,8 @@ class Resurrection extends Component {
         return fA - fB;
     }
 
-    tratarHTML = (bands, html) => {
-        var bandas = bands;
+    tratarHTML = (html) => {
+        var bandas = [];
         var nodosDia = Array.from(html.childNodes).filter(node => node.nodeName !== "#text");
         var dia;
         if ('14' === nodosDia[0].childNodes[0].innerText.substring(0, 2)) {
@@ -253,72 +255,71 @@ class Resurrection extends Component {
             <Row><Col>
                 <h1>Resurrection </h1>
                 <button className="btn btn-primary" onClick={this.actualizarBands}>Actualizar</button>
+                <Carousel>
+
+                    {
+                        this.state.bandas.map((dia, index) => (
+                            <Carousel.Item key={index}>
+                                <Table >
 
 
 
-
-                <Table >
-
-
-                    <thead>
-                        <tr>
-                            <th>Hora</th>
-                            <th>Main Stage</th>
-                            <th>Ritual Stage</th>
-                            <th>Chaos Stage</th>
-                            <th>Desert Stage</th>
+                                    <thead>
+                                        <tr><th><h3>{dia.fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' })}</h3></th></tr>
+                                        <tr>
+                                            <th>Hora</th>
+                                            <th>Main</th>
+                                            <th>Ritual</th>
+                                            <th>Chaos</th>
+                                            <th>Desert</th>
 
 
 
-                        </tr>
+                                        </tr>
 
 
-                    </thead>
+                                    </thead>
 
-                    <tbody>
-                        {
-
-
-                            this.state.horarios.map((hora, index) => {
-                                return (
-                                    <tr key={index}>
-                                        <th >
-                                            {hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </th>
+                                    <tbody>
                                         {
-                                            this.state.escenarios.map((escenario, idx) => {
-                                                var concierto = escenario.find(b => b.horario === index);
-                                                if (concierto)
-                                                    return (
-                                                        <BandaHorario key={idx} concierto={concierto} />
-                                                    )
-                                                else
-                                                    return null;
+
+
+                                            dia.horarios.map((hora, index) => {
+                                                return (
+                                                    <tr key={index}>
+                                                        <th >
+                                                            {hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </th>
+                                                        {
+                                                            dia.escenarios.map((escenario, idx) => {
+                                                                var concierto = escenario.find(b => b.horario === index);
+                                                                if (concierto)
+                                                                    return (
+                                                                        <BandaHorario key={idx} concierto={concierto} />
+                                                                    )
+                                                                else
+                                                                    return null;
+                                                            })
+
+
+
+                                                        }
+
+
+                                                    </tr>
+
+                                                )
                                             })
-
-
-
                                         }
+                                    </tbody>
 
+                                </ Table>
 
-                                    </tr>
+                            </Carousel.Item>
+                        ))
+                    }
 
-                                )
-                            })
-
-
-
-
-
-                        }
-
-                    </tbody>
-
-
-
-
-                </ Table>
-            </Col></Row>
+                </Carousel></Col></Row>
 
 
         )
