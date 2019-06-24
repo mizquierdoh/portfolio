@@ -1,28 +1,82 @@
 import React, { Component } from 'react';
-import { Row, Col, Container } from 'react-bootstrap'
+import { Row, Col, Container, Card } from 'react-bootstrap'
+
 
 class Now extends Component {
 
-    constructor(props) {
-        super(props);
-        console.log('props', this.props);
+    state = { bandas: [] };
+    constructor() {
+        super();
+        var bandas = [];
+
+        if (localStorage.getItem('bandas')) {
+
+            bandas = JSON.parse(localStorage.getItem('bandas')).map(dia => {
+
+                dia.fecha = new Date(dia.fecha);
+                dia.horarios = dia.horarios.map(hora => new Date(hora));
+                dia.escenarios = dia.escenarios.map(escenario => {
+                    return escenario.map(concierto => {
+                        concierto.banda.horaInicio = new Date(concierto.banda.horaInicio);
+                        concierto.banda.horaFin = new Date(concierto.banda.horaFin);
+                        return concierto;
+                    });
+                });
+
+                return dia;
+            });
+
+
+        }
+
+        this.state = { bandas };
+
     }
+
+    getDia(ahora) {
+        if (ahora.getHours() < 5) {
+            return ahora.getDay() - 4;
+        }
+        return Math.max(ahora.getDay() - 3, 0);
+    }
+
+    getHorario(dia, horaActual) {
+        return dia.horarios.indexOf(dia.horarios.find((hora, index, self) =>
+            hora <= horaActual
+            && (index === self.length - 1 ||
+                self[index + 1] >= horaActual)))
+    }
+
     render() {
+        var ahora = new Date(2019, 6, 4, 20, 30, 0);
+
+
+
         return (
             <Container>
                 <Row>
-                    <Col>
-                        <h2>Main </h2>
-                    </Col>
-                    <Col>
-                        <h2>Ritual </h2>
-                    </Col>
-                    <Col>
-                        <h2>Chaos </h2>
-                    </Col>
-                    <Col>
-                        <h2>Desert </h2>
-                    </Col>
+                    {
+
+                        this.state.bandas[this.getDia(ahora)]
+                            .escenarios.map((escenario, index, self) => {
+                                var bandaActual = escenario.find(concierto => concierto.banda.horaFin.getTime() >= ahora.getTime()).banda;
+
+                                return (
+                                    <Col key={index}>
+                                        <Card className="text-center">
+                                            <Card.Title>{bandaActual.escenario}</Card.Title>
+                                            <Card.Text >
+                                                <h4>{bandaActual.nombre}</h4>
+                                                <em>{`${bandaActual.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${bandaActual.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</em>
+                                            </Card.Text>
+                                        </Card>
+
+                                    </Col>
+                                )
+                            })
+
+                    }
+
 
                 </Row>
             </Container>
