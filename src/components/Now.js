@@ -54,31 +54,35 @@ class Now extends Component {
 
         return (
             <Container>
-                <Row>
-                    {
 
-                        this.state.bandas[this.getDia(ahora)]
-                            .escenarios.map((escenario, index, self) => {
-                                var bandaActual = escenario.find(concierto => concierto.banda.horaFin.getTime() >= ahora.getTime()).banda;
+                {
 
-                                return (
-                                    <Col key={index}>
-                                        <Card className="text-center">
-                                            <Card.Title>{bandaActual.escenario}</Card.Title>
-                                            <Card.Text >
-                                                <h4>{bandaActual.nombre}</h4>
-                                                <em>{`${bandaActual.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${bandaActual.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</em>
-                                            </Card.Text>
-                                        </Card>
+                    this.state.bandas[this.getDia(ahora)]
+                        .escenarios.map((escenario, index, self) => {
+                            var bandaActual = escenario.find(concierto => concierto.banda.horaFin.getTime() >= ahora.getTime()).banda;
 
-                                    </Col>
-                                )
-                            })
+                            return (
 
-                    }
+                                <Card className="text-center" key={index} style={{ width: '18rem' }}>
+                                    <Card.Header>{bandaActual.escenario}</Card.Header>
+                                    <Card.Body>
+                                        <Card.Title>{`${bandaActual.nombre} - (${bandaActual.relevancia})`}</Card.Title>
+                                        <Card.Subtitle>{`${bandaActual.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${bandaActual.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</Card.Subtitle>
+                                        <Card.Text >
 
 
-                </Row>
+                                            <p className="text-left">{bandaActual.descripcion}</p>
+                                        </Card.Text>
+                                    </Card.Body>
+                                </Card>
+
+
+                            )
+                        })
+
+                }
+
+
             </Container>
 
         )
