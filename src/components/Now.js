@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Row, Col, Container, Card } from 'react-bootstrap'
+import { Button, CardGroup, Card, ListGroup } from 'react-bootstrap'
+import cheerio from 'cheerio';
+import Countdown from 'react-countdown-now';
+import { MDBIcon } from 'mdbreact';
 
 
 class Now extends Component {
@@ -34,6 +37,9 @@ class Now extends Component {
     }
 
     getDia(ahora) {
+        if (ahora.getTime() <= new Date(2019, 6, 3, 17, 30).getTime() || ahora.getTime() >= new Date(2019, 6, 7, 3).getTime()) {
+            return 0;
+        }
         if (ahora.getHours() < 5) {
             return ahora.getDay() - 4;
         }
@@ -47,43 +53,79 @@ class Now extends Component {
                 self[index + 1] >= horaActual)))
     }
 
+    navegarBandas = (bandaActual) => {
+        this.props.history.push({ pathname: `/banda/${bandaActual.nombre}`, state: { banda: bandaActual } });
+    }
+
     render() {
-        var ahora = new Date(2019, 6, 4, 20, 30, 0);
+        var ahora = new Date();
 
 
 
         return (
-            <Container>
-
+            <CardGroup>
                 {
 
                     this.state.bandas[this.getDia(ahora)]
                         .escenarios.map((escenario, index, self) => {
-                            var bandaActual = escenario.find(concierto => concierto.banda.horaFin.getTime() >= ahora.getTime()).banda;
+                            var conciertoActual = escenario.find(concierto => concierto.banda.horaFin.getTime() >= ahora.getTime());
+                            if (!conciertoActual) {
+                                return null;
+                            }
+
+                            var bandaActual = conciertoActual.banda;
+                            var tocando = bandaActual.horaInicio.getTime() <= ahora.getTime();
 
                             return (
 
-                                <Card className="text-center" key={index} style={{ width: '18rem' }}>
+
+
+                                <Card className="text-center" key={index} >
                                     <Card.Header>{bandaActual.escenario}</Card.Header>
                                     <Card.Body>
                                         <Card.Title>{`${bandaActual.nombre} - (${bandaActual.relevancia})`}</Card.Title>
-                                        <Card.Subtitle>{`${bandaActual.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${bandaActual.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</Card.Subtitle>
-                                        <Card.Text >
 
 
-                                            <p className="text-left">{bandaActual.descripcion}</p>
+
+                                        <ListGroup>
+                                            <ListGroup.Item>
+                                                <Card.Subtitle>{`${bandaActual.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${bandaActual.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</Card.Subtitle>
+                                            </ListGroup.Item>
+                                            <ListGroup.Item className={tocando ? "text-dark" : "text-danger"}>
+                                                <Countdown
+                                                    date={tocando ? bandaActual.horaFin : bandaActual.horaInicio}
+
+                                                />
+                                            </ListGroup.Item>
+
+
+                                        </ListGroup>
+                                        <Card.Text className="text-left">
+                                            {bandaActual.descripcion}
                                         </Card.Text>
+
+
                                     </Card.Body>
+                                    <Card.Footer className="text-left">
+                                        <Button variant="primary" block onClick={() => this.navegarBandas(bandaActual)}>
+
+                                            <MDBIcon icon="info-circle" size="2x" />
+
+
+                                        </Button>
+
+                                    </Card.Footer>
                                 </Card>
+
+
 
 
                             )
                         })
 
                 }
+            </CardGroup>
 
-
-            </Container>
 
         )
     }

@@ -2,8 +2,8 @@ import Bandas from '../data/Bandas';
 import cheerio from 'cheerio';
 
 
-const urlResurrection = 'http://www.resurrectionfest.es/';
-const corsUrl = 'https://cors-anywhere.herokuapp.com/'
+export const urlResurrection = 'http://www.resurrectionfest.es/';
+export const corsUrl = 'https://cors-anywhere.herokuapp.com/';
 
 function compararFechas(a, b) {
     var fA = a.horaInicio;
@@ -17,7 +17,8 @@ const unique = (value, index, self) => {
 
 function getEscenario(bandas, escenario, horarios) {
     var bandasEscenario = [];
-    bandas.filter(b => b.escenario === escenario).forEach(banda => {
+
+    bandas.filter(b => b.escenario.trim() === escenario.trim()).forEach(banda => {
 
 
         var rowSpan = horarios.indexOf(banda.horaFin.toString()) - horarios.indexOf(banda.horaInicio.toString());
@@ -47,7 +48,15 @@ function getEscenario(bandas, escenario, horarios) {
             banda, rowSpan, horario
         })
     })
-    console.log(bandasEscenario);
+
+    var restante = horarios.length;
+    if (bandasEscenario.length > 0) {
+
+        restante -= bandasEscenario[bandasEscenario.length - 1].horario + bandasEscenario[bandasEscenario.length - 1].rowSpan;
+    }
+    if (restante > 0) {
+        bandasEscenario.push({ banda: { escenario }, horario: horarios.length - restante, rowSpan: restante });
+    }
     return bandasEscenario;
 }
 
@@ -171,7 +180,6 @@ export function actualizar() {
 
             )
 
-            console.log(bandas);
             localStorage.setItem('bandas', JSON.stringify(bandas));
             return bandas;
         })

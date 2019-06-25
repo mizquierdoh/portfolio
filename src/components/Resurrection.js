@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Table from 'react-bootstrap/Table'
 import Carousel from 'react-bootstrap/Carousel'
-import Container from 'react-bootstrap/Container'
+import Button from 'react-bootstrap/Button'
 
 import { actualizar } from '../services/Bandas';
 
@@ -52,7 +52,9 @@ class Resurrection extends Component {
         this.setState({ bandas })
     });
 
-
+    navegarBandas = (bandaActual) => {
+        this.props.history.push({ pathname: `/banda/${bandaActual.nombre}`, state: { banda: bandaActual } });
+    }
 
     render() {
 
@@ -63,9 +65,9 @@ class Resurrection extends Component {
                     {
                         this.state.bandas.map((dia, index) => (
                             <Carousel.Item key={index}>
-                                <Table >
+                                <Table responsive>
                                     <thead>
-                                        <tr><th><h3>{dia.fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' })}</h3></th></tr>
+                                        <tr><th colSpan="5"><h3>{dia.fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' })}</h3></th></tr>
                                         <tr>
                                             <th>Hora</th>
                                             <th>Main</th>
@@ -87,7 +89,7 @@ class Resurrection extends Component {
                                                                 var concierto = escenario.find(b => b.horario === index);
                                                                 if (concierto)
                                                                     return (
-                                                                        <BandaHorario key={idx} concierto={concierto} />
+                                                                        <BandaHorario key={idx} concierto={concierto} super={this} />
                                                                     )
                                                                 else
                                                                     return null;
@@ -123,15 +125,19 @@ class Resurrection extends Component {
 }
 
 class BandaHorario extends Component {
+    state = { super: {} }
+    constructor(props) {
+        super();
+        this.state = { super: props.super };
+    }
+
     render() {
         if (this.props.concierto.banda.nombre) {
-            return (<td rowSpan={this.props.concierto.rowSpan} className={this.getTdClassName()}>
-                <Link to={{ pathname: `/banda/${this.props.concierto.banda.nombre}`, state: { banda: this.props.concierto.banda } }} className={this.getLinkClassName()} >
-                    <Container >
-                        <Row><strong>{this.props.concierto.banda.nombre}</strong>&nbsp;({this.props.concierto.banda.relevancia})</Row>
-                        <Row><em>{`${this.props.concierto.banda.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${this.props.concierto.banda.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</em></Row>
-                    </Container>
-                </Link>
+            return (<td rowSpan={this.props.concierto.rowSpan} className="align-middle p-0">
+                <Button className={this.getLinkClassName} variant={this.getVariant()} block onClick={() => this.state.super.navegarBandas(this.props.concierto.banda)}>
+                    <Row><strong>{this.props.concierto.banda.nombre}</strong>&nbsp;({this.props.concierto.banda.relevancia})</Row>
+                    <Row><em>{`${this.props.concierto.banda.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${this.props.concierto.banda.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</em></Row>
+                </Button>
             </td >)
         }
         else {
@@ -148,29 +154,28 @@ class BandaHorario extends Component {
             className = "text-dark";
         }
 
-        return className;
+        return className + " text-center";
     }
 
-    getTdClassName = () => {
-        var className = "";
+    getVariant = () => {
+        var variant = "";
         if (!this.props.concierto.banda.relevancia) {
-            className = "bg-secondary";
+            variant = "secondary";
         }
         else if (this.props.concierto.banda.relevancia < 2.5) {
-            className = "bg-danger";
+            variant = "danger";
         }
         else if (this.props.concierto.banda.relevancia < 3.5) {
-            className = "bg-warning";
+            variant = "warning";
         }
         else {
-            className = "bg-success";
+            variant = "success";
         }
 
         if (this.props.concierto.banda.preferencia === "TRUE") {
-            className = "bg-primary";
+            variant = "primary";
         }
-
-        return "align-middle " + className;
+        return variant;
     }
 }
 

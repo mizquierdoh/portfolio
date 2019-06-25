@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom';
 const Header = () => {
 
     return (
-        <Row>
+        <Row >
             <Col>
                 <Navbar bg="dark" variant="dark" >
                     <Navbar.Brand> <Link to="/" className="text-light">Horarios</Link></Navbar.Brand>

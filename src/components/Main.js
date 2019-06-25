@@ -8,7 +8,7 @@ import { Container } from 'react-bootstrap'
 
 
 const Main = () => (
-    <Container>
+    <Container className="p-0">
         <Switch>
             <Route name="home" exact path="/" component={Resurrection} />
             <Route name="banda" path="/banda/:banda" component={Banda} />
