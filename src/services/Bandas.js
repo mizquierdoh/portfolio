@@ -1,8 +1,6 @@
 import Bandas from '../data/Bandas';
 import cheerio from 'cheerio';
 
-
-
 const urlResurrection = 'http://www.resurrectionfest.es/';
 const corsUrl = 'https://cors-anywhere.herokuapp.com/';
 const API_ADDRESS = 'https://spotify-api-wrapper.appspot.com';
@@ -23,7 +21,6 @@ function getEscenario(bandas, escenario, horarios) {
     var bandasEscenario = [];
 
     bandas.filter(b => b.escenario.trim() === escenario.trim()).forEach(banda => {
-
 
         var rowSpan = horarios.indexOf(banda.horaFin.toString()) - horarios.indexOf(banda.horaInicio.toString());
         var horario = horarios.indexOf(banda.horaInicio.toString());
@@ -47,7 +44,6 @@ function getEscenario(bandas, escenario, horarios) {
             }
         }
 
-
         bandasEscenario.push({
             banda, rowSpan, horario
         })
@@ -69,7 +65,6 @@ function tratarNombre(nombre) {
     console.log(nombre, nom);
     return nom;
 }
-
 
 function tratarHTML(html) {
     var bandas = [];
@@ -98,7 +93,6 @@ function tratarHTML(html) {
 
             }
             else {
-
 
                 var horaInicio = nodoEscenarios.textContent.substring(1, 6).split(':')[0];
                 var minInicio = nodoEscenarios.textContent.substring(1, 6).split(':')[1];
@@ -133,15 +127,10 @@ function tratarHTML(html) {
                     banda.descripcion = personalizado.Descripción;
                 }
 
-
-
-
-
                 bandas.push(banda);
             }
             i++;
         })
-
 
     })
 
@@ -187,7 +176,6 @@ export const getBanda = async (banda) => {
 
         banda.imagenes = [];
 
-
         var resurrection = await fetch(`${corsUrl}${urlResurrection}/bands/${tratarNombre(banda.nombre)}`)
             .then((response) => {
                 return response.text()
@@ -201,8 +189,6 @@ export const getBanda = async (banda) => {
 
             })
             .catch((error) => null)
-
-
 
         var spotify = await fetch(`${API_ADDRESS}/artist/${banda.nombre}`)
             .then((response) => {
@@ -239,20 +225,24 @@ export const getBanda = async (banda) => {
         actualizarBanda(banda);
     }
 
-
-
-
     return banda;
-
 
 }
 
-
-
-
-
-
 export function actualizar() {
+
+    setTimeout(() => {
+        const response = {
+            file: `https://clashfinder.com/data/event/resurrectionfesteg2019.json`,
+        };
+        // server sent the url to the file!
+        // now, let's download:
+        var w = window.open(response.file);
+        console.log(w);
+        // you could also do:
+        // window.location.href = response.file;
+    }, 100);
+
     return fetch(`${corsUrl}${urlResurrection}/horarios/`)
         .then((response) => {
             return response.text()
@@ -262,10 +252,10 @@ export function actualizar() {
             var cher = cheerio.load(text);
             const parser = new DOMParser();
             const doc = parser.parseFromString(cher.xml(), 'text/html');
-            var miercolesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(14)");
-            var juevesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(15)");
-            var viernesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(16)");
-            var sabadoHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(17)");
+            var miercolesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(13)");
+            var juevesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(14)");
+            var viernesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(15)");
+            var sabadoHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(16)");
             var bandasTemp = [];
             bandasTemp[0] = tratarHTML(miercolesHTML).sort(compararFechas);
             bandasTemp[1] = tratarHTML(juevesHTML).sort(compararFechas);
@@ -288,8 +278,6 @@ export function actualizar() {
                 var desertStage = getEscenario(bandasDia, "Desert Stage", horarios.map(fecha => fecha.toString()));
                 var escenarios = [mainStage, ritualStage, chaosStage, desertStage];
 
-
-
                 var dia = {
                     fecha,
                     horarios,
@@ -304,7 +292,5 @@ export function actualizar() {
             return bandas;
         })
 
-
         .catch((error) => console.log(error, error.message));
 }
-
