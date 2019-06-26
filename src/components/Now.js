@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import { Button, CardGroup, Card, ListGroup } from 'react-bootstrap'
-import cheerio from 'cheerio';
-import Countdown from 'react-countdown-now';
-import { MDBIcon } from 'mdbreact';
-
+import { CardGroup } from 'react-bootstrap'
+import Banda from './Banda';
 
 class Now extends Component {
 
@@ -11,29 +8,38 @@ class Now extends Component {
     constructor() {
         super();
         var bandas = [];
-
+        var ahora = new Date();
+        ahora.setDate(ahora.getDate() + 7);
         if (localStorage.getItem('bandas')) {
 
-            bandas = JSON.parse(localStorage.getItem('bandas')).map(dia => {
+            if (localStorage.getItem('bandas')) {
 
-                dia.fecha = new Date(dia.fecha);
-                dia.horarios = dia.horarios.map(hora => new Date(hora));
-                dia.escenarios = dia.escenarios.map(escenario => {
-                    return escenario.map(concierto => {
-                        concierto.banda.horaInicio = new Date(concierto.banda.horaInicio);
-                        concierto.banda.horaFin = new Date(concierto.banda.horaFin);
-                        return concierto;
+                var dias = JSON.parse(localStorage.getItem('bandas')).map(dia => {
+
+                    dia.fecha = new Date(dia.fecha);
+                    dia.horarios = dia.horarios.map(hora => new Date(hora));
+                    dia.escenarios = dia.escenarios.map(escenario => {
+                        return escenario.map(concierto => {
+                            concierto.banda.horaInicio = new Date(concierto.banda.horaInicio);
+                            concierto.banda.horaFin = new Date(concierto.banda.horaFin);
+                            return concierto;
+                        });
                     });
+
+                    return dia;
                 });
 
-                return dia;
-            });
-
-
+                bandas = dias[this.getDia(ahora)]
+                    .escenarios.map(escenario => {
+                        var conciertoActual = escenario.find(concierto => concierto.banda.horaFin.getTime() >= ahora.getTime());
+                        if (!conciertoActual) {
+                            return null;
+                        }
+                        return conciertoActual.banda;
+                    });
+            }
+            this.state = { bandas }
         }
-
-        this.state = { bandas };
-
     }
 
     getDia(ahora) {
@@ -57,75 +63,29 @@ class Now extends Component {
         this.props.history.push({ pathname: `/banda/${bandaActual.nombre}`, state: { banda: bandaActual } });
     }
 
+    componentDidMount() {
+
+    }
+
     render() {
         var ahora = new Date();
-
-
-
         return (
             <CardGroup>
                 {
 
-                    this.state.bandas[this.getDia(ahora)]
-                        .escenarios.map((escenario, index, self) => {
-                            var conciertoActual = escenario.find(concierto => concierto.banda.horaFin.getTime() >= ahora.getTime());
-                            if (!conciertoActual) {
-                                return null;
-                            }
+                    this.state.bandas.map((bandaActual, index) => {
 
-                            var bandaActual = conciertoActual.banda;
-                            var tocando = bandaActual.horaInicio.getTime() <= ahora.getTime();
+                        if (!bandaActual)
+                            return null;
 
-                            return (
+                        return (
+                            <Banda key={index} banda={bandaActual} />
 
-
-
-                                <Card className="text-center" key={index} >
-                                    <Card.Header>{bandaActual.escenario}</Card.Header>
-                                    <Card.Body>
-                                        <Card.Title>{`${bandaActual.nombre} - (${bandaActual.relevancia})`}</Card.Title>
-
-
-
-                                        <ListGroup>
-                                            <ListGroup.Item>
-                                                <Card.Subtitle>{`${bandaActual.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${bandaActual.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</Card.Subtitle>
-                                            </ListGroup.Item>
-                                            <ListGroup.Item className={tocando ? "text-dark" : "text-danger"}>
-                                                <Countdown
-                                                    date={tocando ? bandaActual.horaFin : bandaActual.horaInicio}
-
-                                                />
-                                            </ListGroup.Item>
-
-
-                                        </ListGroup>
-                                        <Card.Text className="text-left">
-                                            {bandaActual.descripcion}
-                                        </Card.Text>
-
-
-                                    </Card.Body>
-                                    <Card.Footer className="text-left">
-                                        <Button variant="primary" block onClick={() => this.navegarBandas(bandaActual)}>
-
-                                            <MDBIcon icon="info-circle" size="2x" />
-
-
-                                        </Button>
-
-                                    </Card.Footer>
-                                </Card>
-
-
-
-
-                            )
-                        })
+                        )
+                    })
 
                 }
             </CardGroup>
-
 
         )
     }

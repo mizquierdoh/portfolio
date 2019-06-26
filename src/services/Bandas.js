@@ -2,8 +2,12 @@ import Bandas from '../data/Bandas';
 import cheerio from 'cheerio';
 
 
-export const urlResurrection = 'http://www.resurrectionfest.es/';
-export const corsUrl = 'https://cors-anywhere.herokuapp.com/';
+
+const urlResurrection = 'http://www.resurrectionfest.es/';
+const corsUrl = 'https://cors-anywhere.herokuapp.com/';
+const API_ADDRESS = 'https://spotify-api-wrapper.appspot.com';
+
+const ESCENARIOS = ["Main Stage", "Ritual Stage", "Chaos Stage", "Desert Stage"];
 
 function compararFechas(a, b) {
     var fA = a.horaInicio;
@@ -60,6 +64,13 @@ function getEscenario(bandas, escenario, horarios) {
     return bandasEscenario;
 }
 
+function tratarNombre(nombre) {
+    var nom = nombre.toLowerCase().replace(/\s/g, "-").normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+    console.log(nombre, nom);
+    return nom;
+}
+
+
 function tratarHTML(html) {
     var bandas = [];
     var nodosDia = Array.from(html.childNodes).filter(node => node.nodeName !== "#text");
@@ -108,9 +119,11 @@ function tratarHTML(html) {
                     id: bandas.length,
                     horaInicio: new Date(2019, 6, diaInicio, horaInicio, minInicio, 0),
                     horaFin: new Date(2019, 6, diaFin, horaFin, minFin, 0),
-                    escenario: escenario,
-                    nombre
-
+                    escenario: escenario.trim(),
+                    nombre,
+                    imagenes: [],
+                    generos: [],
+                    popularidad: null
 
                 };
                 if (personalizado) {
@@ -119,8 +132,12 @@ function tratarHTML(html) {
                     banda.procedencia = personalizado.Procedencia;
                     banda.descripcion = personalizado.Descripción;
                 }
-                bandas.push(banda);
 
+
+
+
+
+                bandas.push(banda);
             }
             i++;
         })
@@ -130,6 +147,109 @@ function tratarHTML(html) {
 
     return bandas;
 }
+
+function getDia(fecha) {
+    if (fecha.getHours() < 5) {
+        return fecha.getDay() - 4;
+    }
+    return fecha.getDay() - 3;
+}
+
+function actualizarBanda(banda) {
+    var dias = JSON.parse(localStorage.getItem('bandas')).map(dia => {
+
+        dia.fecha = new Date(dia.fecha);
+        dia.horarios = dia.horarios.map(hora => new Date(hora));
+        dia.escenarios = dia.escenarios.map(escenario => {
+            return escenario.map(concierto => {
+                concierto.banda.horaInicio = new Date(concierto.banda.horaInicio);
+                concierto.banda.horaFin = new Date(concierto.banda.horaFin);
+                return concierto;
+            });
+        });
+
+        return dia;
+    });
+
+    console.log(getDia(banda.horaInicio));
+    dias[getDia(banda.horaInicio)]
+        .escenarios[ESCENARIOS.indexOf(banda.escenario)]
+        .find(concierto => concierto.banda.id === banda.id).banda = banda;
+
+    localStorage.setItem('bandas', JSON.stringify(dias));
+    console.log("Banda actualizada:", banda);
+
+}
+
+export const getBanda = async (banda) => {
+
+    if (!(banda.imagenes.length > 0 || banda.popularidad || banda.generos.length > 0)) {
+
+        banda.imagenes = [];
+
+
+        var resurrection = await fetch(`${corsUrl}${urlResurrection}/bands/${tratarNombre(banda.nombre)}`)
+            .then((response) => {
+                return response.text()
+            })
+            .then(text => {
+
+                var cher = cheerio.load(text);
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(cher.xml(), 'text/html');
+                return doc.querySelector("#page-top > div.wrap.container > div > div.row.rf-main-content > article > div > div.rf16-featured-image.col-md-8.col-lg-8.col-sm-12.col-xs-12 > a > img")
+
+            })
+            .catch((error) => null)
+
+
+
+        var spotify = await fetch(`${API_ADDRESS}/artist/${banda.nombre}`)
+            .then((response) => {
+                return response.json();
+            })
+            .then(json => {
+                if (json.artists.total > 0) {
+                    const artist = json.artists.items[0];
+                    if (artist) {
+                        return {
+                            imagen: artist.images[0].url,
+                            generos: artist.genres,
+                            popularidad: artist.popularity
+                        }
+
+                    }
+                }
+                return null;
+
+            })
+            .catch((error) => null)
+        if (resurrection) {
+            console.log(resurrection.src);
+            banda.imagenes.push(resurrection.src);
+        }
+
+        if (spotify) {
+            console.log(spotify);
+            banda.imagenes.push(spotify.imagen);
+            banda.generos = spotify.generos;
+            banda.popularidad = spotify.popularidad;
+        }
+
+        actualizarBanda(banda);
+    }
+
+
+
+
+    return banda;
+
+
+}
+
+
+
+
 
 
 export function actualizar() {

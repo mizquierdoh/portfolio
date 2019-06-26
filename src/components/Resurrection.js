@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-
-import { Link } from 'react-router-dom';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Table from 'react-bootstrap/Table'
@@ -8,11 +6,7 @@ import Carousel from 'react-bootstrap/Carousel'
 import Button from 'react-bootstrap/Button'
 
 import { actualizar } from '../services/Bandas';
-
-
-
-
-
+import packageJson from '../../package.json';
 
 class Resurrection extends Component {
 
@@ -20,6 +14,7 @@ class Resurrection extends Component {
 
     constructor() {
         super();
+
         var bandas = [];
 
         if (localStorage.getItem('bandas')) {
@@ -41,8 +36,6 @@ class Resurrection extends Component {
 
         }
 
-
-
         this.state = {
             bandas
         }
@@ -54,6 +47,15 @@ class Resurrection extends Component {
 
     navegarBandas = (bandaActual) => {
         this.props.history.push({ pathname: `/banda/${bandaActual.nombre}`, state: { banda: bandaActual } });
+    }
+
+    componentDidMount() {
+        var version = packageJson.version;
+        if (localStorage.getItem('version') && localStorage.getItem('version') !== version) {
+            localStorage.clear();
+            localStorage.setItem('version', version);
+            this.actualizar();
+        }
     }
 
     render() {
@@ -119,7 +121,6 @@ class Resurrection extends Component {
                 {carousel}
             </Col></Row>
 
-
         )
     }
 }
@@ -149,7 +150,6 @@ class BandaHorario extends Component {
     getLinkClassName = () => {
         var className = "text-light";
 
-
         if (this.props.concierto.banda.relevancia < 3.5 && this.props.concierto.banda.relevancia >= 2.5 && this.props.concierto.banda.preferencia !== "TRUE") {
             className = "text-dark";
         }
@@ -178,9 +178,5 @@ class BandaHorario extends Component {
         return variant;
     }
 }
-
-
-
-
 
 export default Resurrection;
