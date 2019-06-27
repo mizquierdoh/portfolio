@@ -60,21 +60,27 @@ class Banda extends Component {
                         </em></h4>
                     </Card.Subtitle>
                     <ListGroup className="text-left">
-                        <ListGroup.Item className={tocando ? "text-dark" : "text-danger"}>
+                        <ListGroup.Item className={tocando ? "text-dark" : "text-danger" + " text-center"}>
                             <Countdown
                                 date={tocando ? this.state.banda.horaFin : this.state.banda.horaInicio}
 
                             />
                         </ListGroup.Item>
-                        <ListGroup.Item>
-                            {this.state.banda.procedencia}
-                        </ListGroup.Item>
-                        <ListGroup.Item>
-                            {this.state.banda.generos.join(", ")}
-                        </ListGroup.Item>
-                        <ListGroup.Item>
-                            Popularidad: {this.state.banda.popularidad}
-                        </ListGroup.Item>
+
+                        {this.state.banda.procedencia ?
+                            (<ListGroup.Item>
+                                {this.state.banda.procedencia}
+                            </ListGroup.Item>) : null
+                        }
+                        {this.state.banda.generos.length > 0 ?
+                            (<ListGroup.Item>
+                                {this.state.banda.generos.join(", ")}
+                            </ListGroup.Item>) : null
+                        }
+                        {this.state.banda.popularidad ?
+                            (<ListGroup.Item>
+                                Popularidad: {this.state.banda.popularidad}
+                            </ListGroup.Item>) : null}
                     </ListGroup>
                     <Card.Text className="text-left">
                         <br />{this.state.banda.descripcion}

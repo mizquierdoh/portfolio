@@ -1,5 +1,6 @@
 import Bandas from '../data/Bandas';
 import cheerio from 'cheerio';
+import resurrection from '../data/resurrection'
 
 const urlResurrection = 'http://www.resurrectionfest.es/';
 const corsUrl = 'https://cors-anywhere.herokuapp.com/';
@@ -64,77 +65,6 @@ function tratarNombre(nombre) {
     var nom = nombre.toLowerCase().replace(/\s/g, "-").normalize('NFD').replace(/[\u0300-\u036f]/g, "");
     console.log(nombre, nom);
     return nom;
-}
-
-function tratarHTML(html) {
-    var bandas = [];
-    var nodosDia = Array.from(html.childNodes).filter(node => node.nodeName !== "#text");
-    var dia;
-    if ('14' === nodosDia[0].childNodes[0].innerText.substring(0, 2)) {
-        dia = 6
-    }
-    else {
-        dia = nodosDia[0].childNodes[0].innerText.substring(1, 2);
-    }
-    nodosDia = nodosDia.slice(1);
-    var escenario;
-    nodosDia.forEach(nodoDia => {
-        var nodosEscenarios = Array.from(nodoDia.childNodes).filter(nodo => nodo.nodeName !== "BR");
-        var i = 0;
-        nodosEscenarios.forEach(nodoEscenarios => {
-
-            if (i === 0) {
-                if (nodoEscenarios.nodeName === "EM") {
-                    escenario = nodoEscenarios.innerText;
-                }
-                else {
-                    escenario = nodoEscenarios.textContent;
-                }
-
-            }
-            else {
-
-                var horaInicio = nodoEscenarios.textContent.substring(1, 6).split(':')[0];
-                var minInicio = nodoEscenarios.textContent.substring(1, 6).split(':')[1];
-                var horaFin = nodoEscenarios.textContent.substring(9, 14).split(':')[0];
-                var minFin = nodoEscenarios.textContent.substring(9, 14).split(':')[1];
-                var nombre = nodoEscenarios.textContent.substr(15);
-                var diaInicio = dia;
-                if (horaInicio < 5) {
-                    diaInicio++;
-                }
-                var diaFin = dia;
-                if (horaFin < 5) {
-                    diaFin++;
-                }
-                var personalizado = Bandas.find(band => band.Grupo === nombre.toUpperCase());
-
-                var banda = {
-                    id: bandas.length,
-                    horaInicio: new Date(2019, 6, diaInicio, horaInicio, minInicio, 0),
-                    horaFin: new Date(2019, 6, diaFin, horaFin, minFin, 0),
-                    escenario: escenario.trim(),
-                    nombre,
-                    imagenes: [],
-                    generos: [],
-                    popularidad: null
-
-                };
-                if (personalizado) {
-                    banda.preferencia = personalizado.Preferencia;
-                    banda.relevancia = personalizado.Relevancia;
-                    banda.procedencia = personalizado.Procedencia;
-                    banda.descripcion = personalizado.Descripción;
-                }
-
-                bandas.push(banda);
-            }
-            i++;
-        })
-
-    })
-
-    return bandas;
 }
 
 function getDia(fecha) {
@@ -229,68 +159,81 @@ export const getBanda = async (banda) => {
 
 }
 
+function parseFecha(fechaString) {
+
+    var fechaHora = fechaString.split(" ");
+    var dia = fechaHora[0].split("-");
+    var hora = fechaHora[1].split(":");
+    var fecha = new Date(dia[0], dia[1] - 1, dia[2], hora[0], hora[1]);
+    return fecha;
+
+}
+
 export function actualizar() {
 
-    setTimeout(() => {
-        const response = {
-            file: `https://clashfinder.com/data/event/resurrectionfesteg2019.json`,
-        };
-        // server sent the url to the file!
-        // now, let's download:
-        var w = window.open(response.file);
-        console.log(w);
-        // you could also do:
-        // window.location.href = response.file;
-    }, 100);
+    console.log(resurrection);
 
-    return fetch(`${corsUrl}${urlResurrection}/horarios/`)
-        .then((response) => {
-            return response.text()
-        })
-        .then(text => {
+    var bandasTemp = [];
+    var idBanda = 0;
+    resurrection.locations.forEach(escenario => {
+        escenario.events.forEach((concierto) => {
 
-            var cher = cheerio.load(text);
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(cher.xml(), 'text/html');
-            var miercolesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(13)");
-            var juevesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(14)");
-            var viernesHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(15)");
-            var sabadoHTML = doc.querySelector("#page-top > div.wrap.container > div > div:nth-child(2) > article > div > div > div:nth-child(16)");
-            var bandasTemp = [];
-            bandasTemp[0] = tratarHTML(miercolesHTML).sort(compararFechas);
-            bandasTemp[1] = tratarHTML(juevesHTML).sort(compararFechas);
-            bandasTemp[2] = tratarHTML(viernesHTML).sort(compararFechas);
-            bandasTemp[3] = tratarHTML(sabadoHTML).sort(compararFechas);
-
-            var bandas = bandasTemp.map((bandasDia, index) => {
-
-                var fecha = new Date(2019, 6, 3 + index, 12, 0, 0);
-                var horarios = bandasDia.map(banda => banda.horaInicio)
-                    .concat(bandasDia.map(banda => banda.horaFin))
-                    .map(fecha => fecha.toString())
-                    .filter(unique)
-                    .map(fecha => new Date(fecha))
-                    .sort((a, b) => a - b);
-
-                var mainStage = getEscenario(bandasDia, "Main Stage", horarios.map(fecha => fecha.toString()));
-                var ritualStage = getEscenario(bandasDia, "Ritual Stage", horarios.map(fecha => fecha.toString()));
-                var chaosStage = getEscenario(bandasDia, "Chaos Stage", horarios.map(fecha => fecha.toString()));
-                var desertStage = getEscenario(bandasDia, "Desert Stage", horarios.map(fecha => fecha.toString()));
-                var escenarios = [mainStage, ritualStage, chaosStage, desertStage];
-
-                var dia = {
-                    fecha,
-                    horarios,
-                    escenarios
-                };
-                return dia;
+            var banda = {
+                id: idBanda,
+                horaInicio: parseFecha(concierto.start),
+                horaFin: parseFecha(concierto.end),
+                escenario: escenario.name + " Stage",
+                nombre: concierto.name,
+                imagenes: [],
+                generos: [],
+                popularidad: null
+            }
+            var personalizado = Bandas.find(band => band.Grupo === banda.nombre.toUpperCase());
+            if (personalizado) {
+                banda.preferencia = personalizado.Preferencia;
+                banda.relevancia = personalizado.Relevancia;
+                banda.procedencia = personalizado.Procedencia;
+                banda.descripcion = personalizado.Descripción;
             }
 
-            )
+            idBanda++;
 
-            localStorage.setItem('bandas', JSON.stringify(bandas));
-            return bandas;
+            if (!bandasTemp[getDia(banda.horaInicio)]) {
+                bandasTemp[getDia(banda.horaInicio)] = [];
+
+            }
+            bandasTemp[getDia(banda.horaInicio)].push(banda);
+
         })
+    })
 
-        .catch((error) => console.log(error, error.message));
+    bandasTemp.map(dia => dia.sort(compararFechas));
+
+    var dias = bandasTemp.map((bandasDia, index) => {
+
+        var fecha = new Date(2019, 6, 3 + index, 12, 0, 0);
+        var horarios = bandasDia.map(banda => banda.horaInicio)
+            .concat(bandasDia.map(banda => banda.horaFin))
+            .map(fecha => fecha.toString())
+            .filter(unique)
+            .map(fecha => new Date(fecha))
+            .sort((a, b) => a - b);
+
+        var mainStage = getEscenario(bandasDia, "Main Stage", horarios.map(fecha => fecha.toString()));
+        var ritualStage = getEscenario(bandasDia, "Ritual Stage", horarios.map(fecha => fecha.toString()));
+        var chaosStage = getEscenario(bandasDia, "Chaos Stage", horarios.map(fecha => fecha.toString()));
+        var desertStage = getEscenario(bandasDia, "Desert Stage", horarios.map(fecha => fecha.toString()));
+        var escenarios = [mainStage, ritualStage, chaosStage, desertStage];
+
+        return {
+            fecha,
+            horarios,
+            escenarios
+        };
+
+    })
+    localStorage.setItem('bandas', JSON.stringify(dias));
+    console.log(dias);
+    return dias;
+
 }

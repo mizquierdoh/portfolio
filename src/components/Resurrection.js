@@ -41,9 +41,10 @@ class Resurrection extends Component {
         }
     }
 
-    actualizar = () => actualizar().then(bandas => {
-        this.setState({ bandas })
-    });
+    actualizar = () => {
+
+        this.setState({ bandas: actualizar() });
+    }
 
     navegarBandas = (bandaActual) => {
         this.props.history.push({ pathname: `/banda/${bandaActual.nombre}`, state: { banda: bandaActual } });
@@ -134,7 +135,7 @@ class BandaHorario extends Component {
 
     render() {
         if (this.props.concierto.banda.nombre) {
-            return (<td rowSpan={this.props.concierto.rowSpan} className="align-middle p-0">
+            return (<td rowSpan={this.props.concierto.rowSpan} className="align-middle p-0 m-0">
                 <Button className={this.getLinkClassName} variant={this.getVariant()} block onClick={() => this.state.super.navegarBandas(this.props.concierto.banda)}>
                     <Row><strong>{this.props.concierto.banda.nombre}</strong>&nbsp;({this.props.concierto.banda.relevancia})</Row>
                     <Row><em>{`${this.props.concierto.banda.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${this.props.concierto.banda.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</em></Row>
@@ -154,7 +155,7 @@ class BandaHorario extends Component {
             className = "text-dark";
         }
 
-        return className + " text-center";
+        return className + " text-center mh-100";
     }
 
     getVariant = () => {
