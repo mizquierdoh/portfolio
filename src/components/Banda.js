@@ -26,23 +26,6 @@ class Banda extends Component {
         getBanda(this.state.banda)
             .then((banda) => this.setState({ banda }));
 
-        var dimensions = {
-            height: 0,
-            width: 0
-        }
-
-        this.state.banda.imagenes.forEach((imagen, index) => {
-            console.log(dimensions);
-
-            var img = this.refs["img." + this.state.banda.id + "." + index];
-            console.log(img, img.offsetHeight);
-            dimensions.width = Math.max(img.offsetWidth, dimensions.width);
-            dimensions.height = Math.max(img.offsetHeight, dimensions.height);
-
-        });
-        console.log(dimensions);
-        this.setState({ dimensions })
-
     }
 
     getVariant = () => {
@@ -87,22 +70,17 @@ class Banda extends Component {
             <Card className="text-center" bg={this.getVariant()} text={this.getTextColor()}>
                 <Card.Header><h3>{this.state.banda.nombre}  - {this.state.banda.relevancia}</h3> </Card.Header>
                 {
-                    this.state.dimensions ?
+                    <Carousel interval={null}>
 
-                        (<Carousel style={{ height: this.state.dimensions.height }}>
+                        {
 
-                            {
+                            this.state.banda.imagenes.map((img, index) => (
+                                < Card.Img key={index} src={img} alt="imagen grupo" className="img-thumbnail" align="middle" />
 
-                                this.state.banda.imagenes.map((img, index) => (
-                                    < Card.Img key={index} src={img} alt="imagen grupo" className="img-thumbnail" align="middle" ref={"img." + this.state.banda.id + "." + index} />
+                            ))
+                        }
 
-                                ))
-                            }
-
-                        </Carousel>) :
-                        this.state.banda.imagenes.map((img, index) => (
-                            < Card.Img key={index} src={img} alt="imagen grupo" className="img-thumbnail" ref={"img." + this.state.banda.id + "." + index} />
-                        ))
+                    </Carousel>
 
                 }
                 <Card.Body>
