@@ -47,7 +47,7 @@ class Resurrection extends Component {
     }
 
     navegarBandas = (bandaActual) => {
-        this.props.history.push({ pathname: `/banda/${bandaActual.nombre}`, state: { banda: bandaActual } });
+        this.props.history.push({ pathname: `/banda/${bandaActual.id}` });
     }
 
     componentDidMount() {
@@ -151,7 +151,7 @@ class BandaHorario extends Component {
     getLinkClassName = () => {
         var className = "text-light";
 
-        if (this.props.concierto.banda.relevancia < 3.5 && this.props.concierto.banda.relevancia >= 2.5 && this.props.concierto.banda.preferencia !== "TRUE") {
+        if (this.props.concierto.banda.relevancia < 3.5 && this.props.concierto.banda.relevancia >= 2.5 && !this.props.concierto.banda.preferencia) {
             className = "text-dark";
         }
 
@@ -173,7 +173,7 @@ class BandaHorario extends Component {
             variant = "success";
         }
 
-        if (this.props.concierto.banda.preferencia === "TRUE") {
+        if (this.props.concierto.banda.preferencia) {
             variant = "primary";
         }
         return variant;

@@ -9,7 +9,7 @@ class Now extends Component {
         super();
         var bandas = [];
         var ahora = new Date();
-        ahora.setDate(ahora.getDate() + 7);
+
         if (localStorage.getItem('bandas')) {
 
             if (localStorage.getItem('bandas')) {
@@ -68,7 +68,6 @@ class Now extends Component {
     }
 
     render() {
-        var ahora = new Date();
         return (
             <CardGroup>
                 {

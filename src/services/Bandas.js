@@ -74,6 +74,35 @@ function getDia(fecha) {
     return fecha.getDay() - 3;
 }
 
+export function getBandaById(id) {
+    var dias = JSON.parse(localStorage.getItem('bandas')).map(dia => {
+
+        dia.fecha = new Date(dia.fecha);
+        dia.horarios = dia.horarios.map(hora => new Date(hora));
+        dia.escenarios = dia.escenarios.map(escenario => {
+            return escenario.map(concierto => {
+                concierto.banda.horaInicio = new Date(concierto.banda.horaInicio);
+                concierto.banda.horaFin = new Date(concierto.banda.horaFin);
+                return concierto;
+            });
+        });
+
+        return dia;
+    });
+
+    for (var i = 0; i < dias.length; i++) {
+        for (var j = 0; j < dias[i].escenarios.length; j++) {
+            for (var k = 0; k < dias[i].escenarios[j].length; k++) {
+                if (dias[i].escenarios[j][k].banda.id === parseInt(id)) {
+                    return dias[i].escenarios[j][k].banda;
+                }
+            }
+        }
+    }
+    return null;
+
+}
+
 function actualizarBanda(banda) {
     var dias = JSON.parse(localStorage.getItem('bandas')).map(dia => {
 
@@ -90,13 +119,11 @@ function actualizarBanda(banda) {
         return dia;
     });
 
-    console.log(getDia(banda.horaInicio));
     dias[getDia(banda.horaInicio)]
         .escenarios[ESCENARIOS.indexOf(banda.escenario)]
         .find(concierto => concierto.banda.id === banda.id).banda = banda;
 
     localStorage.setItem('bandas', JSON.stringify(dias));
-    console.log("Banda actualizada:", banda);
 
 }
 
@@ -190,7 +217,7 @@ export function actualizar() {
             }
             var personalizado = Bandas.find(band => band.Grupo === banda.nombre.toUpperCase());
             if (personalizado) {
-                banda.preferencia = personalizado.Preferencia;
+                banda.preferencia = personalizado.Preferencia === "TRUE";
                 banda.relevancia = personalizado.Relevancia;
                 banda.procedencia = personalizado.Procedencia;
                 banda.descripcion = personalizado.Descripción;

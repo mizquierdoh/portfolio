@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Card, Carousel, ListGroup, Container } from 'react-bootstrap';
+import { Card, Carousel, ListGroup, Button } from 'react-bootstrap';
 
-import { getBanda } from '../services/Bandas'
+import { getBanda, getBandaById } from '../services/Bandas'
 import Countdown from 'react-countdown-now';
 
 class Banda extends Component {
@@ -11,14 +11,16 @@ class Banda extends Component {
     constructor(props) {
         super(props);
         console.log(props);
+        var banda = {};
         if (props.banda) {
-            this.state.banda = props.banda;
+            banda = props.banda;
         }
         else {
-            this.state = {
-                banda: this.props.location.state.banda,
-            };
+            banda = getBandaById(props.match.params.id);
         }
+        console.log(banda);
+
+        this.state = { banda };
 
     }
 
@@ -43,7 +45,7 @@ class Banda extends Component {
             variant = "success";
         }
 
-        if (this.state.banda.preferencia === "TRUE") {
+        if (this.state.banda.preferencia) {
             variant = "primary";
         }
         return variant;
@@ -51,7 +53,7 @@ class Banda extends Component {
     getTextColor = (invertir = false) => {
         var className = "white";
 
-        if (invertir || (this.state.banda.relevancia < 3.5 && this.state.banda.relevancia >= 2.5 && this.state.banda.preferencia !== "TRUE")) {
+        if (invertir || (this.state.banda.relevancia < 3.5 && this.state.banda.relevancia >= 2.5 && !this.state.banda.preferencia)) {
             className = "dark";
         }
         else {
@@ -61,9 +63,13 @@ class Banda extends Component {
         return className;
     }
 
+    navegarEditar = (bandaActual) => {
+        console.log(this.props);
+        this.props.history.push({ pathname: `/editar/${bandaActual.id}` });
+    }
+
     render() {
         var ahora = new Date();
-        ahora.setDate(ahora.getDate() + 7);
         var tocando = this.state.banda.horaInicio.getTime() <= ahora.getTime();
 
         return (
@@ -100,6 +106,7 @@ class Banda extends Component {
                     <ListGroup className={"text-left text-" + this.getTextColor(true)}>
                         <ListGroup.Item className={(tocando ? "text-dark" : "text-danger") + " text-center"}>
                             <Countdown
+                                onComplete={this.forceUpdate}
                                 date={tocando ? this.state.banda.horaFin : this.state.banda.horaInicio}
 
                             />
@@ -124,6 +131,9 @@ class Banda extends Component {
                         <br />{this.state.banda.descripcion}
                     </Card.Text>
                 </Card.Body>
+                <Card.Footer>
+                    <Button block onClick={() => this.navegarEditar(this.state.banda)}>Editar</Button>
+                </Card.Footer>
             </Card >
         );
     }
