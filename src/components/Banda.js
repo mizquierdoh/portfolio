@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Row, Col, Card, Carousel, ListGroup } from 'react-bootstrap';
-import { corsUrl, urlResurrection } from '../services/Bandas';
-import cheerio from 'cheerio';
+import { Card, Carousel, ListGroup } from 'react-bootstrap';
+
 import { getBanda } from '../services/Bandas'
 import Countdown from 'react-countdown-now';
 
@@ -29,13 +28,46 @@ class Banda extends Component {
 
     }
 
+    getVariant = () => {
+        var variant = "";
+        if (!this.state.banda.relevancia) {
+            variant = "secondary";
+        }
+        else if (this.state.banda.relevancia < 2.5) {
+            variant = "danger";
+        }
+        else if (this.state.banda.relevancia < 3.5) {
+            variant = "warning";
+        }
+        else {
+            variant = "success";
+        }
+
+        if (this.state.banda.preferencia === "TRUE") {
+            variant = "primary";
+        }
+        return variant;
+    }
+    getTextColor = (invertir = false) => {
+        var className = "white";
+
+        if (invertir || (this.state.banda.relevancia < 3.5 && this.state.banda.relevancia >= 2.5 && this.state.banda.preferencia !== "TRUE")) {
+            className = "dark";
+        }
+        else {
+            className = "white";
+        }
+
+        return className;
+    }
+
     render() {
         var ahora = new Date();
         ahora.setDate(ahora.getDate() + 7);
         var tocando = this.state.banda.horaInicio.getTime() <= ahora.getTime();
 
         return (
-            <Card className="text-center">
+            <Card className="text-center" bg={this.getVariant()} text={this.getTextColor()}>
                 <Card.Header><h2>{this.state.banda.nombre}  - {this.state.banda.relevancia}</h2> </Card.Header>
                 <Carousel>
                     {
@@ -59,8 +91,8 @@ class Banda extends Component {
                             {this.state.banda.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
                         </em></h4>
                     </Card.Subtitle>
-                    <ListGroup className="text-left">
-                        <ListGroup.Item className={tocando ? "text-dark" : "text-danger" + " text-center"}>
+                    <ListGroup className={"text-left text-" + this.getTextColor(true)}>
+                        <ListGroup.Item className={(tocando ? "text-dark" : "text-danger") + " text-center"}>
                             <Countdown
                                 date={tocando ? this.state.banda.horaFin : this.state.banda.horaInicio}
 
@@ -82,7 +114,7 @@ class Banda extends Component {
                                 Popularidad: {this.state.banda.popularidad}
                             </ListGroup.Item>) : null}
                     </ListGroup>
-                    <Card.Text className="text-left">
+                    <Card.Text className={"text-left text-" + this.getTextColor()} >
                         <br />{this.state.banda.descripcion}
                     </Card.Text>
                 </Card.Body>
