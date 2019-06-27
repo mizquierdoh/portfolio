@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Carousel, ListGroup } from 'react-bootstrap';
+import { Card, Carousel, ListGroup, Container } from 'react-bootstrap';
 
 import { getBanda } from '../services/Bandas'
 import Countdown from 'react-countdown-now';
@@ -25,6 +25,23 @@ class Banda extends Component {
     componentDidMount() {
         getBanda(this.state.banda)
             .then((banda) => this.setState({ banda }));
+
+        var dimensions = {
+            height: 0,
+            width: 0
+        }
+
+        this.state.banda.imagenes.forEach((imagen, index) => {
+            console.log(dimensions);
+
+            var img = this.refs["img." + this.state.banda.id + "." + index];
+            console.log(img, img.offsetHeight);
+            dimensions.width = Math.max(img.offsetWidth, dimensions.width);
+            dimensions.height = Math.max(img.offsetHeight, dimensions.height);
+
+        });
+        console.log(dimensions);
+        this.setState({ dimensions })
 
     }
 
@@ -68,15 +85,26 @@ class Banda extends Component {
 
         return (
             <Card className="text-center" bg={this.getVariant()} text={this.getTextColor()}>
-                <Card.Header><h2>{this.state.banda.nombre}  - {this.state.banda.relevancia}</h2> </Card.Header>
-                <Carousel>
-                    {
+                <Card.Header><h3>{this.state.banda.nombre}  - {this.state.banda.relevancia}</h3> </Card.Header>
+                {
+                    this.state.dimensions ?
+
+                        (<Carousel style={{ height: this.state.dimensions.height }}>
+
+                            {
+
+                                this.state.banda.imagenes.map((img, index) => (
+                                    < Card.Img key={index} src={img} alt="imagen grupo" className="img-thumbnail" align="middle" ref={"img." + this.state.banda.id + "." + index} />
+
+                                ))
+                            }
+
+                        </Carousel>) :
                         this.state.banda.imagenes.map((img, index) => (
-                            <Card.Img key={index} src={img} alt="imagen grupo" className="img-thumbnail" />
+                            < Card.Img key={index} src={img} alt="imagen grupo" className="img-thumbnail" ref={"img." + this.state.banda.id + "." + index} />
                         ))
 
-                    }
-                </Carousel>
+                }
                 <Card.Body>
                     <Card.Title>
                         <h3>{this.state.banda.escenario}
@@ -118,7 +146,7 @@ class Banda extends Component {
                         <br />{this.state.banda.descripcion}
                     </Card.Text>
                 </Card.Body>
-            </Card>
+            </Card >
         );
     }
 
