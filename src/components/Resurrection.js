@@ -6,6 +6,8 @@ import Carousel from 'react-bootstrap/Carousel'
 import Button from 'react-bootstrap/Button'
 
 import { actualizar, getBandasLocalStorage } from '../services/Bandas';
+import { getWeather } from '../services/Aemet'
+
 import packageJson from '../../package.json';
 
 class Resurrection extends Component {
@@ -44,6 +46,8 @@ class Resurrection extends Component {
             localStorage.setItem('version', version);
             this.actualizar();
         }
+
+        getWeather();
     }
 
     render() {
