@@ -5,7 +5,7 @@ import Table from 'react-bootstrap/Table'
 import Carousel from 'react-bootstrap/Carousel'
 import Button from 'react-bootstrap/Button'
 
-import { actualizar } from '../services/Bandas';
+import { actualizar, getBandasLocalStorage } from '../services/Bandas';
 import packageJson from '../../package.json';
 
 class Resurrection extends Component {
@@ -19,20 +19,7 @@ class Resurrection extends Component {
 
         if (localStorage.getItem('bandas')) {
 
-            bandas = JSON.parse(localStorage.getItem('bandas')).map(dia => {
-
-                dia.fecha = new Date(dia.fecha);
-                dia.horarios = dia.horarios.map(hora => new Date(hora));
-                dia.escenarios = dia.escenarios.map(escenario => {
-                    return escenario.map(concierto => {
-                        concierto.banda.horaInicio = new Date(concierto.banda.horaInicio);
-                        concierto.banda.horaFin = new Date(concierto.banda.horaFin);
-                        return concierto;
-                    });
-                });
-
-                return dia;
-            });
+            bandas = getBandasLocalStorage();
 
         }
 

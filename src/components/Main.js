@@ -3,6 +3,7 @@ import { Switch, Route } from "react-router-dom";
 import Resurrection from "./Resurrection";
 import Banda from "./Banda";
 import EditarBanda from "./EditarBanda";
+import Busqueda from "./Busqueda";
 import Now from "./Now";
 import { Container } from 'react-bootstrap'
 
@@ -13,6 +14,7 @@ const Main = () => (
             <Route name="banda" path="/banda/:id" component={Banda} />
             <Route name="ahora" path="/now" component={Now} />
             <Route name="editar" path="/editar/:id" component={EditarBanda} />
+            <Route name="buscar" path="/buscar" component={Busqueda} />
         </Switch>
     </Container>
 );

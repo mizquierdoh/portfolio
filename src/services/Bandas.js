@@ -63,7 +63,6 @@ function getEscenario(bandas, escenario, horarios) {
 
 function tratarNombre(nombre) {
     var nom = nombre.toLowerCase().replace(/\s/g, "-").normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-    console.log(nombre, nom);
     return nom;
 }
 
@@ -74,8 +73,8 @@ function getDia(fecha) {
     return fecha.getDay() - 3;
 }
 
-export function getBandaById(id) {
-    var dias = JSON.parse(localStorage.getItem('bandas')).map(dia => {
+export function getBandasLocalStorage() {
+    return JSON.parse(localStorage.getItem('bandas')).map(dia => {
 
         dia.fecha = new Date(dia.fecha);
         dia.horarios = dia.horarios.map(hora => new Date(hora));
@@ -90,6 +89,30 @@ export function getBandaById(id) {
         return dia;
     });
 
+}
+
+export function findBandasByName(nombre, bandas = null) {
+    if (!nombre)
+        return null;
+
+    var dias = getBandasLocalStorage();
+    var busqueda = [];
+
+    dias.forEach((dia) => {
+        dia.escenarios.forEach((escenario) => {
+            busqueda = busqueda.concat(escenario
+                .filter((concierto) => concierto.banda.nombre ? concierto.banda.nombre.toLowerCase().indexOf(nombre.toLowerCase()) > -1 : false)
+                .map(concierto => concierto.banda))
+        })
+    })
+
+    return busqueda;
+
+}
+
+export function getBandaById(id) {
+    var dias = getBandasLocalStorage();
+
     for (var i = 0; i < dias.length; i++) {
         for (var j = 0; j < dias[i].escenarios.length; j++) {
             for (var k = 0; k < dias[i].escenarios[j].length; k++) {
@@ -103,7 +126,7 @@ export function getBandaById(id) {
 
 }
 
-function actualizarBanda(banda) {
+export function actualizarBanda(banda) {
     var dias = JSON.parse(localStorage.getItem('bandas')).map(dia => {
 
         dia.fecha = new Date(dia.fecha);
@@ -122,6 +145,10 @@ function actualizarBanda(banda) {
     dias[getDia(banda.horaInicio)]
         .escenarios[ESCENARIOS.indexOf(banda.escenario)]
         .find(concierto => concierto.banda.id === banda.id).banda = banda;
+
+    console.log(dias[getDia(banda.horaInicio)]
+        .escenarios[ESCENARIOS.indexOf(banda.escenario)]
+        .find(concierto => concierto.banda.id === banda.id).banda);
 
     localStorage.setItem('bandas', JSON.stringify(dias));
 
@@ -168,12 +195,10 @@ export const getBanda = async (banda) => {
             })
             .catch((error) => null)
         if (resurrection) {
-            console.log(resurrection.src);
             banda.imagenes.push(resurrection.src);
         }
 
         if (spotify) {
-            console.log(spotify);
             banda.imagenes.push(spotify.imagen);
             banda.generos = spotify.generos;
             banda.popularidad = spotify.popularidad;
@@ -197,8 +222,6 @@ function parseFecha(fechaString) {
 }
 
 export function actualizar() {
-
-    console.log(resurrection);
 
     var bandasTemp = [];
     var idBanda = 0;
@@ -260,7 +283,6 @@ export function actualizar() {
 
     })
     localStorage.setItem('bandas', JSON.stringify(dias));
-    console.log(dias);
     return dias;
 
 }

@@ -3,14 +3,13 @@ import { Component } from "react";
 import { Container } from 'react-bootstrap';
 import { Form, Button } from "react-bootstrap";
 
-import { getBanda, getBandaById } from "../services/Bandas";
+import { actualizarBanda, getBandaById } from "../services/Bandas";
 
 class EditarBanda extends Component {
     state = { banda: {} }
 
     constructor(props) {
         super(props);
-        console.log(props);
         var banda = {};
         if (props.banda) {
             banda = props.banda;
@@ -22,7 +21,15 @@ class EditarBanda extends Component {
         }
 
         var { nombre, preferencia, procedencia, relevancia, descripcion } = banda;
-        this.state = { nombre, preferencia, procedencia, relevancia, descripcion, banda };
+        this.state = {
+            nombre,
+            preferencia: preferencia == true,
+            procedencia: procedencia ? procedencia : "",
+            relevancia: relevancia ? relevancia : "",
+            descripcion: descripcion ? descripcion : "",
+            banda
+        };
+        console.log(this.state);
 
     }
 
@@ -32,9 +39,9 @@ class EditarBanda extends Component {
         banda.procedencia = this.state.procedencia;
         banda.relevancia = this.state.relevancia;
         banda.descripcion = this.state.descripcion;
-        console.log(this.props.history);
-        getBanda(banda)
-            .then(() => this.props.history.goBack());
+        console.log(banda);
+        actualizarBanda(banda);
+        this.props.history.goBack();
     }
 
     render() {
@@ -48,7 +55,7 @@ class EditarBanda extends Component {
                         <Form.Label>
                             Preferencia:
                         </Form.Label>
-                        <Form.Check checked={this.state.preferencia} onChange={(e) => this.setState({ preferencia: e.target.checked })} />
+                        <Form.Check defaultChecked={this.state.preferencia} onChange={(e) => this.setState({ preferencia: e.target.checked })} />
                         <Form.Label>Procedencia:</Form.Label>
                         <Form.Control value={this.state.procedencia} onChange={(e) => this.setState({ procedencia: e.target.value })} />
                         <Form.Label>
@@ -61,6 +68,7 @@ class EditarBanda extends Component {
                         <Form.Control as="textarea" rows="3" value={this.state.descripcion} onChange={(e) => this.setState({ descripcion: e.target.value })} />
                     </Form.Group>
                     <Button onClick={this.guardarBanda}>Guardar</Button>
+                    <Button variant="danger" onClick={() => this.props.history.goBack()}>Cancelar</Button>
                 </Form>
             </Container>
         )

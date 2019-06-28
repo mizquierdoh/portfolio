@@ -10,7 +10,6 @@ class Banda extends Component {
 
     constructor(props) {
         super(props);
-        console.log(props);
         var banda = {};
         if (props.banda) {
             banda = props.banda;
@@ -18,7 +17,6 @@ class Banda extends Component {
         else {
             banda = getBandaById(props.match.params.id);
         }
-        console.log(banda);
 
         this.state = { banda };
 
@@ -64,7 +62,6 @@ class Banda extends Component {
     }
 
     navegarEditar = (bandaActual) => {
-        console.log(this.props);
         this.props.history.push({ pathname: `/editar/${bandaActual.id}` });
     }
 
@@ -75,20 +72,18 @@ class Banda extends Component {
         return (
             <Card className="text-center" bg={this.getVariant()} text={this.getTextColor()}>
                 <Card.Header><h3>{this.state.banda.nombre}  - {this.state.banda.relevancia}</h3> </Card.Header>
-                {
-                    <Carousel interval={null}>
+                <Carousel interval={null}>
 
-                        {
+                    {
 
-                            this.state.banda.imagenes.map((img, index) => (
-                                < Card.Img key={index} src={img} alt="imagen grupo" className="img-thumbnail" align="middle" />
+                        this.state.banda.imagenes.map((img, index) => (
+                            < Card.Img key={index} src={img} alt="imagen grupo" className="img-thumbnail" align="middle" />
 
-                            ))
-                        }
+                        ))
+                    }
 
-                    </Carousel>
+                </Carousel>
 
-                }
                 <Card.Body>
                     <Card.Title>
                         <h3>{this.state.banda.escenario}
@@ -132,7 +127,7 @@ class Banda extends Component {
                     </Card.Text>
                 </Card.Body>
                 <Card.Footer>
-                    <Button block onClick={() => this.navegarEditar(this.state.banda)}>Editar</Button>
+                    <Button block onClick={() => this.navegarEditar(this.state.banda)} variant="light">Editar</Button>
                 </Card.Footer>
             </Card >
         );
