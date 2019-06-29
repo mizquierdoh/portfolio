@@ -21,15 +21,16 @@ class EditarBanda extends Component {
         }
 
         var { nombre, preferencia, procedencia, relevancia, descripcion } = banda;
+        // eslint-disable-next-line 
+        preferencia = preferencia == true;
         this.state = {
             nombre,
-            preferencia: preferencia == true,
+            preferencia,
             procedencia: procedencia ? procedencia : "",
             relevancia: relevancia ? relevancia : "",
             descripcion: descripcion ? descripcion : "",
             banda
         };
-        console.log(this.state);
 
     }
 
@@ -39,7 +40,6 @@ class EditarBanda extends Component {
         banda.procedencia = this.state.procedencia;
         banda.relevancia = this.state.relevancia;
         banda.descripcion = this.state.descripcion;
-        console.log(banda);
         actualizarBanda(banda);
         this.props.history.goBack();
     }

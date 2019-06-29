@@ -2,7 +2,7 @@
   "name": "portfolio",
   "version": "0.1.1",
   "private": true,
-  "homepage": "https://mizquierdoh.github.io/portfolio",
+  "homepage": "https://mizquierdoh.github.io/resurrection",
   "dependencies": {
     "bootstrap": "^4.3.1",
     "cheerio": "^1.0.0-rc.3",

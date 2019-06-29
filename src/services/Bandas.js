@@ -127,28 +127,13 @@ export function getBandaById(id) {
 }
 
 export function actualizarBanda(banda) {
-    var dias = JSON.parse(localStorage.getItem('bandas')).map(dia => {
-
-        dia.fecha = new Date(dia.fecha);
-        dia.horarios = dia.horarios.map(hora => new Date(hora));
-        dia.escenarios = dia.escenarios.map(escenario => {
-            return escenario.map(concierto => {
-                concierto.banda.horaInicio = new Date(concierto.banda.horaInicio);
-                concierto.banda.horaFin = new Date(concierto.banda.horaFin);
-                return concierto;
-            });
-        });
-
-        return dia;
-    });
+    var dias = getBandasLocalStorage();
 
     dias[getDia(banda.horaInicio)]
         .escenarios[ESCENARIOS.indexOf(banda.escenario)]
         .find(concierto => concierto.banda.id === banda.id).banda = banda;
 
-    console.log(dias[getDia(banda.horaInicio)]
-        .escenarios[ESCENARIOS.indexOf(banda.escenario)]
-        .find(concierto => concierto.banda.id === banda.id).banda);
+
 
     localStorage.setItem('bandas', JSON.stringify(dias));
 

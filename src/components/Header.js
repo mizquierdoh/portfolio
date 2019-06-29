@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, Nav, Navbar } from 'react-bootstrap'
 import { Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
+import logo from '../resources/logo.png'
 
 class Header extends Component {
 
@@ -13,7 +14,7 @@ class Header extends Component {
                         <Navbar.Brand> <Link to="/" className="text-light">
                             <img
                                 alt="logo"
-                                src="../../rfeg2018-favicon.png"
+                                src={logo}
                                 width="40"
                                 height="40"
                                 className="d-inline-block align-top"
