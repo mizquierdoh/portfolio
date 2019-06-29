@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/portfolio/static/css/main.34de6062.chunk.css",
-    "main.js": "/portfolio/static/js/main.14891dfe.chunk.js",
-    "main.js.map": "/portfolio/static/js/main.14891dfe.chunk.js.map",
-    "runtime~main.js": "/portfolio/static/js/runtime~main.f308c8e6.js",
-    "runtime~main.js.map": "/portfolio/static/js/runtime~main.f308c8e6.js.map",
-    "static/css/2.f1ce84ce.chunk.css": "/portfolio/static/css/2.f1ce84ce.chunk.css",
-    "static/js/2.a1f10bcb.chunk.js": "/portfolio/static/js/2.a1f10bcb.chunk.js",
-    "static/js/2.a1f10bcb.chunk.js.map": "/portfolio/static/js/2.a1f10bcb.chunk.js.map",
-    "index.html": "/portfolio/index.html",
-    "precache-manifest.35e80b9a37f0a9f75ccd432ee5a00d5a.js": "/portfolio/precache-manifest.35e80b9a37f0a9f75ccd432ee5a00d5a.js",
-    "service-worker.js": "/portfolio/service-worker.js",
-    "static/css/2.f1ce84ce.chunk.css.map": "/portfolio/static/css/2.f1ce84ce.chunk.css.map",
-    "static/css/main.34de6062.chunk.css.map": "/portfolio/static/css/main.34de6062.chunk.css.map",
-    "static/media/mdb.css": "/portfolio/static/media/arrow_right.8ef6a08c.svg",
-    "static/media/all.min.css": "/portfolio/static/media/fa-solid-900.f14c3b2f.ttf"
+    "main.css": "/resurrection/static/css/main.498d002a.chunk.css",
+    "main.js": "/resurrection/static/js/main.0d1ea784.chunk.js",
+    "main.js.map": "/resurrection/static/js/main.0d1ea784.chunk.js.map",
+    "runtime~main.js": "/resurrection/static/js/runtime~main.8ac04e01.js",
+    "runtime~main.js.map": "/resurrection/static/js/runtime~main.8ac04e01.js.map",
+    "static/css/2.4f1eade7.chunk.css": "/resurrection/static/css/2.4f1eade7.chunk.css",
+    "static/js/2.bed237ff.chunk.js": "/resurrection/static/js/2.bed237ff.chunk.js",
+    "static/js/2.bed237ff.chunk.js.map": "/resurrection/static/js/2.bed237ff.chunk.js.map",
+    "index.html": "/resurrection/index.html",
+    "precache-manifest.a0f7cd29b3e4a8b40d061f640ff71bcd.js": "/resurrection/precache-manifest.a0f7cd29b3e4a8b40d061f640ff71bcd.js",
+    "service-worker.js": "/resurrection/service-worker.js",
+    "static/css/2.4f1eade7.chunk.css.map": "/resurrection/static/css/2.4f1eade7.chunk.css.map",
+    "static/css/main.498d002a.chunk.css.map": "/resurrection/static/css/main.498d002a.chunk.css.map",
+    "static/media/mdb.css": "/resurrection/static/media/arrow_right.8ef6a08c.svg",
+    "static/media/all.min.css": "/resurrection/static/media/fa-solid-900.f14c3b2f.ttf"
   }
 }
