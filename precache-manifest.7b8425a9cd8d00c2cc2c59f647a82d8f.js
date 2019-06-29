@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "3e9d93aea3a6cfe0272425d6ee122d0b",
+    "revision": "6f2e400ca1abdfc5804b39d099a4b309",
     "url": "/resurrection/index.html"
   },
   {
-    "revision": "1244db727d2be0b2a415",
+    "revision": "f3064acdc0f222c9a1dc",
     "url": "/resurrection/static/css/2.4f1eade7.chunk.css"
   },
   {
-    "revision": "1e27dd242a5832485b9e",
+    "revision": "176c7ab8fb4c5dacca41",
     "url": "/resurrection/static/css/main.498d002a.chunk.css"
   },
   {
-    "revision": "1244db727d2be0b2a415",
-    "url": "/resurrection/static/js/2.76177016.chunk.js"
+    "revision": "f3064acdc0f222c9a1dc",
+    "url": "/resurrection/static/js/2.abd64a00.chunk.js"
   },
   {
-    "revision": "1e27dd242a5832485b9e",
-    "url": "/resurrection/static/js/main.3104892a.chunk.js"
+    "revision": "176c7ab8fb4c5dacca41",
+    "url": "/resurrection/static/js/main.7d7e59cd.chunk.js"
   },
   {
     "revision": "adb2383582b063a1f256",
