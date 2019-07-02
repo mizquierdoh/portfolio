@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "99dcefbea3621a1de0486b9889ebbf8f",
+    "revision": "2b4796524d3fa192d1c38f6388841588",
     "url": "/resurrection/index.html"
   },
   {
-    "revision": "a145258f0c3e7009933f",
+    "revision": "03c751427d3d6c838775",
     "url": "/resurrection/static/css/2.4f1eade7.chunk.css"
   },
   {
-    "revision": "6a594865a9e1d028ea8b",
+    "revision": "d6db681d7ac6899d67bc",
     "url": "/resurrection/static/css/main.498d002a.chunk.css"
   },
   {
-    "revision": "a145258f0c3e7009933f",
-    "url": "/resurrection/static/js/2.f20e748a.chunk.js"
+    "revision": "03c751427d3d6c838775",
+    "url": "/resurrection/static/js/2.b50f6112.chunk.js"
   },
   {
-    "revision": "6a594865a9e1d028ea8b",
-    "url": "/resurrection/static/js/main.a63ef303.chunk.js"
+    "revision": "d6db681d7ac6899d67bc",
+    "url": "/resurrection/static/js/main.3d62cfb2.chunk.js"
   },
   {
     "revision": "adb2383582b063a1f256",
@@ -170,5 +170,17 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "f14c3b2ff7c821a4c838debbffd6ad2d",
     "url": "/resurrection/static/media/fa-solid-900.f14c3b2f.ttf"
+  },
+  {
+    "revision": "6d49e7d37a0b51d9b586a13a03011da8",
+    "url": "/resurrection/static/media/logo_instagram.6d49e7d3.png"
+  },
+  {
+    "revision": "bfab5e5a001a3184d6f6fa0a08288218",
+    "url": "/resurrection/static/media/logo_kofi.bfab5e5a.png"
+  },
+  {
+    "revision": "f08c524d147f46398cb54013ee7013ee",
+    "url": "/resurrection/static/media/logo_linkedin.f08c524d.png"
   }
 ]);
