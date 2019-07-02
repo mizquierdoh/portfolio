@@ -26,7 +26,6 @@ class Resurrection extends Component {
             bandas = getBandasLocalStorage();
 
         }
-        console.log(JSON.parse(localStorage.getItem("prediccion")));
 
         var prediccion = JSON.parse(localStorage.getItem("prediccion")) ? JSON.parse(localStorage.getItem("prediccion")).map(p => {
             p.hora = new Date(p.hora);
@@ -91,7 +90,6 @@ class Resurrection extends Component {
         }
 
         getWeather().then(p => {
-            console.log(p);
             this.setState({ prediccion: p });
             localStorage.setItem("prediccion", JSON.stringify(p));
         });
@@ -107,7 +105,7 @@ class Resurrection extends Component {
                         this.state.bandas.map((dia, index) => (
                             <Carousel.Item key={index} className="h-100">
                                 <Table responsive className="h-100">
-                                    <thead clasName="sticky-top">
+                                    <thead>
                                         <tr><th colSpan="5"><h3>{dia.fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' })}</h3></th></tr>
                                         <tr>
                                             <th>Hora</th>
