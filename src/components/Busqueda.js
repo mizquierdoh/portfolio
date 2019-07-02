@@ -19,7 +19,6 @@ class Busqueda extends Component {
 
     render() {
 
-
         let resultado = this.state.busqueda ? (
             <ListGroup>
                 {
