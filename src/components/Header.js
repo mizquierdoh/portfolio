@@ -22,7 +22,8 @@ class Header extends Component {
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="mr-auto">
                                 <NavLink className="text-light mr-4" to="/now" >Ahora</NavLink>
-                                <NavLink className="text-light" to="/buscar" >Buscar</NavLink>
+                                <NavLink className="text-light mr-4" to="/buscar" >Buscar</NavLink>
+                                <NavLink className="text-light" to="/about" >?</NavLink>
                             </Nav>
 
                         </Navbar.Collapse>

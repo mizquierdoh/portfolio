@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListGroup, Container, Form, FormControl, Row } from 'react-bootstrap';
+import { ListGroup, Container, Form, FormControl } from 'react-bootstrap';
 import { findBandasByName } from '../services/Bandas';
 
 class Busqueda extends Component {
@@ -18,7 +18,6 @@ class Busqueda extends Component {
     }
 
     render() {
-
 
         let resultado = this.state.busqueda ? (
             <ListGroup>
