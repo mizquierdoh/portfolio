@@ -138,7 +138,6 @@ class Resurrection extends Component {
                                                 ) : null
                                                 return (
                                                     <tr key={index} className="h-100">
-                                                        <th >
                                                             <Container>
                                                                 <Row>
                                                                     {hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -176,8 +175,6 @@ class Resurrection extends Component {
         )
 
         return (
-            <Container className="h-100">
-                <Row><Col>
                     <h1>Resurrection </h1>
                     <Button onClick={this.actualizar} className="p-3">
                         <MDBIcon icon="sync-alt" size="2x" />
@@ -190,7 +187,6 @@ class Resurrection extends Component {
                     </Button>
                     <input type="file" ref={this.refSubir} style={{ display: "none" }} onChange={this.handleSubir} />
                 </Col></Row>
-                <Row className="h-100"><Col className="h-100">
                     {carousel}
                 </Col></Row>
             </Container>
