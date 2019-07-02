@@ -1,4 +1,4 @@
-#Resurrection Fest 2019
+# Resurrection Fest 2019
 
 Esta aplicación ha sido mi forma de manejar el hype para el festival en estas últimas semanas. 
 
@@ -12,9 +12,9 @@ Es la segunda vez que voy al festival, la primera fue en 2017; y me di cuenta de
 
 - **Porque puedo:** Estoy aprendiendo a manejarme con React y, a la vez que aprendo, voy haciendo esto.
 
-##Características
+## Características
 
-###Horarios
+### Horarios
 Son los mismos que la web, de hecho están sacados del [clashfinder](https://clashfinder.com/s/resurrectionfesteg2019/). Se recomienda ver con el móvil en horizontal
 
 - **Botón actualizar:** Limpia los datos locales y carga los datos por defecto.
@@ -27,7 +27,7 @@ Son los mismos que la web, de hecho están sacados del [clashfinder](https://cla
     * Morado - Sin identificar.
     * Azul - Preferencia de la banda (ver Editar banda) 
 
-###Detalle de la banda
+### Detalle de la banda
 
 - **Nombre y relevancia:** El nombre y la relevancia que el usuario haya puesto a la banda.
 - **Imágenes:** Las imágenes vienen de la [página de la banda](http://www.resurrectionfest.es/bands/) en la página del festival y de la página de Spotify de la banda. Ahora, hay bandas, como las del concurso de bandas que no tienen foto en la página del festival. Por otra parte, la búsqueda de bandas en spotify se hace por nombre y cogiendo el primer artista que encuentra, por lo que muchas imágenes de spotify que no se corresponden y hay bandas que directamente no tienen. Estoy buscando una solución a esto último.
@@ -38,19 +38,21 @@ Son los mismos que la web, de hecho están sacados del [clashfinder](https://cla
 - **Descripción:** La descripción que el usuario haya puesto a la banda.
 - **Botón Editar:** Accede a la página para editar la información de la banda.
 
-###Editar banda
+### Editar banda
 
 - **Preferencia:** Si el usuario decide que quiere ver esa banda, destacándola en azul en el horario.
 - **Procedencia:** Procedencia de la banda.
 - **Relevancia:** Este campo está pensado para indicar la importancia que tiene la banda para el usuario, que se indicará con un código de colores en el horario.
 - **Descripción:** Notas que se quieran apuntar sobre la banda. Yo lo uso para acordarme de quién era quién de los grupos que no conocía antes.
 
-###Ahora
+### Ahora
 
 Esta sección muestra los conciertos que hay en ese momento con la cuenta atrás en negro indicando lo que le queda y los siguientes que van a suceder con la cuenta atrás en rojo a cuándo van a empezar.
 
-###Buscar
+### Buscar
 Es un buscador de grupos por nombre. Al picar te lleva a la página del grupo.
+
+## Información variada
 
 Dejo por aquí mi [LinkedIn](https://www.linkedin.com/in/miguel-izquierdo-hidalgo-04950679/), [Instagram](https://www.instagram.com/michael_left90/) y [correo](mailto:miguel.izquierdo.hidalgo@gmail.com) por si alguien tiene alguna sugerencia que dudo que sea capaz de solucionar en lo que queda de tiempo.
 
