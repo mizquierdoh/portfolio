@@ -1,6 +1,18 @@
 # Resurrection Fest 2019
 
-Esta aplicación ha sido mi forma de manejar el hype para el festival en estas últimas semanas. 
+## Sobre mí
+
+Quiero antes de nada dar las gracias a la organización del Resurrection Fest, que son capaces de llevar adelante año tras año este festivalazo. Estoy seguro que ellos sacarán una app bastante mejor que la mía, pero como explico más adelante, esto en principio iba a ser sólo para mi propio uso y disfrute.
+
+Trabajo de programador, pero me gusta hacer mis cosillas y ésta es una de ellas. Principalmente me gusta el metal progresivo y técnico, el death metal, sobre todo si es melódico y el thrash, aunque no hago ascos a ningún estilo y escucho muchas otras cosas. En su día fui guitarra de un grupillo de versiones de rock español que no llegó a gran cosa más allá de nuestra propia experiencia. Hago publi ya que estoy del grupo resultante de cuando lo dejamos: [Endeuda2](https://open.spotify.com/artist/5L2PWYFVBWAq2MCKpc7Qtq?si=h7Dh7PPhSAylbbi2Ec_SXg), que son bastante mejores de lo que fuimos en el grupo anterior y se lo toman bastante más en serio.
+
+Dejo por aquí mi [LinkedIn](https://www.linkedin.com/in/miguel-izquierdo-hidalgo-04950679/), [Instagram](https://www.instagram.com/michael_left90/) y [correo](mailto:miguel.izquierdo.hidalgo@gmail.com) por si alguien tiene alguna sugerencia que dudo que sea capaz de solucionar en lo que queda de tiempo, pero que agradeceré enormemente.
+
+Si te ha gustado la aplicación me puedes invitar a un café o media cerveza en el festival por [aquí](https://ko-fi.com/leftidos).
+
+## Sobre la aplicación
+
+Esta aplicación ha sido mi forma de manejar el hype para el festival en estas últimas semanas. En ningún momento había pensado en publicarla, pero vi que quedó medio decente y que puede llegar a ser útil a alguien más que a mí mismo.
 
 La información se guarda en el teléfono y en ningún momento se guarda en ninguna base de datos. La aplicación funciona desde el navegador y no es necesario instalar nada.
 
@@ -52,8 +64,3 @@ Esta sección muestra los conciertos que hay en ese momento con la cuenta atrás
 ### Buscar
 Es un buscador de grupos por nombre. Al picar te lleva a la página del grupo.
 
-## Información variada
-
-Dejo por aquí mi [LinkedIn](https://www.linkedin.com/in/miguel-izquierdo-hidalgo-04950679/), [Instagram](https://www.instagram.com/michael_left90/) y [correo](mailto:miguel.izquierdo.hidalgo@gmail.com) por si alguien tiene alguna sugerencia que dudo que sea capaz de solucionar en lo que queda de tiempo.
-
-Si te ha gustado la aplicación me puedes invitar a un café o media cerveza en el festival por [aquí](https://ko-fi.com/leftidos).
