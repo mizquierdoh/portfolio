@@ -176,7 +176,7 @@ class Resurrection extends Component {
         return (
             <Container className="h-100 p-0">
                 <Row className="p-2"><Col>
-                    <h1>Resurrection </h1>
+                    <h1>Resurrection Fest 2019</h1>
                     <Button onClick={this.actualizar} className="p-3">
                         <MDBIcon icon="sync-alt" size="2x" />
                     </Button>
