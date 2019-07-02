@@ -14,7 +14,6 @@ class App extends Component {
 
   render() {
     return (
-      <Container>
       <Container className="w-100 p-0">
         <Header />
         <Main />

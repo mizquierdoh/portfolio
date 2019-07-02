@@ -107,7 +107,7 @@ class Resurrection extends Component {
                         this.state.bandas.map((dia, index) => (
                             <Carousel.Item key={index} className="h-100">
                                 <Table responsive className="h-100">
-                                    <thead >
+                                    <thead clasName="sticky-top">
                                         <tr><th colSpan="5"><h3>{dia.fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' })}</h3></th></tr>
                                         <tr>
                                             <th>Hora</th>
@@ -138,6 +138,7 @@ class Resurrection extends Component {
                                                 ) : null
                                                 return (
                                                     <tr key={index} className="h-100">
+                                                        <th className="py-0">
                                                             <Container>
                                                                 <Row>
                                                                     {hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -175,6 +176,8 @@ class Resurrection extends Component {
         )
 
         return (
+            <Container className="h-100 p-0">
+                <Row className="p-2"><Col>
                     <h1>Resurrection </h1>
                     <Button onClick={this.actualizar} className="p-3">
                         <MDBIcon icon="sync-alt" size="2x" />
@@ -187,6 +190,7 @@ class Resurrection extends Component {
                     </Button>
                     <input type="file" ref={this.refSubir} style={{ display: "none" }} onChange={this.handleSubir} />
                 </Col></Row>
+                <Row className="h-100"><Col className="h-100 px-1">
                     {carousel}
                 </Col></Row>
             </Container>
