@@ -65,8 +65,6 @@ class Resurrection extends Component {
         this.refSubir.current.click();
     }
 
-
-
     handleSubir = (event) => {
         var reader = new FileReader();
         reader.onload = (event) => {
@@ -104,7 +102,7 @@ class Resurrection extends Component {
                     {
                         this.state.bandas.map((dia, index) => (
                             <Carousel.Item key={index} className="h-100">
-                                <Table responsive className="h-100">
+                                <Table className="h-100 w-100 table-sm">
                                     <thead>
                                         <tr><th colSpan="5"><h3>{dia.fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' })}</h3></th></tr>
                                         <tr>
@@ -129,17 +127,17 @@ class Resurrection extends Component {
                                                             {datosPrediccion.estadoCielo ? (<Image src={require("../resources/aemet/" + datosPrediccion.estadoCielo.valor + ".png")} alt={datosPrediccion.estadoCielo.descripcion} />) : null}
 
                                                         </Row>
-                                                        <Row>
-                                                            {datosPrediccion.temperatura} ºC
-                                                    </Row>
+                                                        <Row className="pl-1">
+                                                            <small>{datosPrediccion.temperatura} ºC</small>
+                                                        </Row>
                                                     </>
                                                 ) : null
                                                 return (
                                                     <tr key={index} className="h-100">
                                                         <th className="py-0">
                                                             <Container>
-                                                                <Row>
-                                                                    {hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                <Row className="pl-1">
+                                                                    <small>{hora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
                                                                 </Row>
                                                                 {prediccion}
                                                             </Container>
@@ -188,7 +186,7 @@ class Resurrection extends Component {
                     </Button>
                     <input type="file" ref={this.refSubir} style={{ display: "none" }} onChange={this.handleSubir} />
                 </Col></Row>
-                <Row className="h-100"><Col className="h-100 px-1">
+                <Row className="h-100"><Col className="h-100 px-1 mx-1">
                     {carousel}
                 </Col></Row>
             </Container>
@@ -205,19 +203,18 @@ class BandaHorario extends Component {
 
     }
 
-
     render() {
         if (this.props.concierto.banda.nombre) {
             return (<td rowSpan={this.props.concierto.rowSpan} ref={this.celda} className="h-100 m-0 p-0" >
                 <button
                     type="button"
-                    className={`btn ${this.getVariant()} ${this.getTextClassName()} h-100 w-100 m-0`}
+                    className={`btn ${this.getVariant()} ${this.getTextClassName()} h-100 w-100 m-0 px-0`}
 
                     onClick={() => this.state.super.navegarBandas(this.props.concierto.banda)}
 
                 >
-                    <Row className="text-center"><strong>{this.props.concierto.banda.nombre}</strong>&nbsp;({this.props.concierto.banda.relevancia})</Row>
-                    <Row className="text-center"><em className="text-center">{`${this.props.concierto.banda.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${this.props.concierto.banda.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</em></Row>
+                    <Row className="text-center m-1"><small><strong>{this.props.concierto.banda.nombre}</strong>&nbsp;({this.props.concierto.banda.relevancia})</small></Row>
+                    <Row className="text-center m-1"><em className="text-center"><small>{`${this.props.concierto.banda.horaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${this.props.concierto.banda.horaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</small></em></Row>
                 </button>
             </td >)
         }
