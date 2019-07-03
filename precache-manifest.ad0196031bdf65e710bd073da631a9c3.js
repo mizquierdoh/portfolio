@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "7193c25c017cb01676b493b834785c4e",
+    "revision": "d57343ca824cd377a871da8ee76d0ab0",
     "url": "/resurrection/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/resurrection/static/css/2.4f1eade7.chunk.css"
   },
   {
-    "revision": "83e7436c660f81c597b4",
+    "revision": "f7b783a481c47c98ffc4",
     "url": "/resurrection/static/css/main.498d002a.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/resurrection/static/js/2.308ce41b.chunk.js"
   },
   {
-    "revision": "83e7436c660f81c597b4",
-    "url": "/resurrection/static/js/main.28b2d87c.chunk.js"
+    "revision": "f7b783a481c47c98ffc4",
+    "url": "/resurrection/static/js/main.9c25ae86.chunk.js"
   },
   {
     "revision": "adb2383582b063a1f256",
