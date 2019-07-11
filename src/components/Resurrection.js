@@ -93,6 +93,24 @@ class Resurrection extends Component {
         });
     }
 
+    getIconAemet(estadoCielo) {
+        if (estadoCielo) {
+            try {
+                return (<Image src={require("../resources/aemet/" + estadoCielo.valor + ".png")} alt={estadoCielo.descripcion} />)
+            } catch (err) {
+                if (err.code === 'MODULE_NOT_FOUND') {
+                    if (estadoCielo.valor.endsWith("n")) {
+                        let estadoDia = estadoCielo;
+                        estadoDia.valor = estadoDia.valor.substr(0, 2);
+                        return this.getIconAemet(estadoDia);
+                    }
+                    return (<span>{estadoCielo.descripcion}</span>);
+                }
+            }
+        }
+        return null;
+    }
+
     render() {
 
         let carousel = (
@@ -124,7 +142,7 @@ class Resurrection extends Component {
                                                     <>
                                                         <Row>
 
-                                                            {datosPrediccion.estadoCielo ? (<Image src={require("../resources/aemet/" + datosPrediccion.estadoCielo.valor + ".png")} alt={datosPrediccion.estadoCielo.descripcion} />) : null}
+                                                            {getIconAemet(datosPrediccion.estadoCielo)}
 
                                                         </Row>
                                                         <Row className="pl-1">
